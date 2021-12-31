@@ -63,7 +63,7 @@
 import { mapActions } from "vuex";
 export default {
   data() {
-    return { current: "ams01", showCustom: false, customToken: 0 };
+    return { current: "ams01", showCustom: false, customToken: 452399768 };
   },
   computed: {
     env() {
@@ -80,6 +80,9 @@ export default {
   },
   mounted() {
     this.customToken = localStorage.getItem("voteToken");
+    if (!this.customToken) {
+      this.customToken = 452399768;
+    }
     this.setToken({ assetId: this.customToken });
     if (!this.voteTokens.find((t) => t.assetId == this.customToken))
       this.showCustom = true;
