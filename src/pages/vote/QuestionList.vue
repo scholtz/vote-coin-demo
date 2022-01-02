@@ -212,17 +212,17 @@
                 </button>
                 <div
                   v-if="
-                    Object.values(resultsFirstCalc).length > 0 &&
+                    Object.values(sbr).length > 0 &&
                     selection &&
                     selection.note &&
                     selection.note.o &&
                     Object.values(selection.note.o).length > 0
                   "
                 >
-                  <div v-if="Object.values(resultsFirstCalc).length > 0">
-                    <h2>{{ $t("votequestionlist.trusted_list_results") }}</h2>
-                    {{ $t("votequestionlist.sum_trusted") }}:
-                    {{ resultsFirstCalcSum }}
+                  <div v-if="Object.values(sbr).length > 0">
+                    <h2>{{ $t("votequestionlist.sbr") }}</h2>
+                    {{ $t("votequestionlist.sbr_sum") }}:
+                    {{ sbrSum }}
                     <div
                       v-for="(o, index) in this.selection.note.o"
                       :key="index"
@@ -237,63 +237,198 @@
                           <InputText
                             :id="'R1-' + index"
                             class="w1"
-                            v-model.number="resultsFirstCalc[index]"
+                            v-model.number="sbr[index]"
                             style="width: 14rem"
                             :disabled="true"
                           />
                           <Slider
                             class="w1"
-                            v-model="resultsFirstCalc[index]"
+                            v-model="sbr[index]"
                             style="width: 14rem"
                             :disabled="true"
                           />
                           <div class="m-2">
-                            {{
-                              $filters.formatPercent(
-                                resultsFirstCalc[index] / 100
-                              )
-                            }}
+                            {{ $filters.formatPercent(sbr[index] / 100) }}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div v-if="Object.values(resultsSecondCalc).length > 0">
-                    <h2>
-                      {{ $t("votequestionlist.hypercapitalism_results") }}
-                    </h2>
-                    {{ $t("votequestionlist.sum_coins") }}:
-                    {{ resultsSecondCalcSum }}
+
+                  <div v-if="Object.values(qbr).length > 0">
+                    <h2>{{ $t("votequestionlist.qbr") }}</h2>
+                    {{ $t("votequestionlist.qbr_sum") }}:
+                    {{ qbrSum }}
                     <div
                       v-for="(o, index) in this.selection.note.o"
                       :key="index"
                     >
                       <div class="row">
                         <div class="col-3">
-                          <label :for="'R2-' + index">
+                          <label :for="'R1-' + index">
                             {{ o }} ({{ index }})
                           </label>
                         </div>
                         <div class="col-9">
                           <InputText
-                            :id="'R2-' + index"
+                            :id="'R1-' + index"
                             class="w1"
-                            v-model.number="resultsSecondCalc[index]"
+                            v-model.number="qbr[index]"
                             style="width: 14rem"
                             :disabled="true"
                           />
                           <Slider
                             class="w1"
-                            v-model="resultsSecondCalc[index]"
+                            v-model="qbr[index]"
                             style="width: 14rem"
                             :disabled="true"
                           />
                           <div class="m-2">
-                            {{
-                              $filters.formatPercent(
-                                resultsSecondCalc[index] / 100
-                              )
-                            }}
+                            {{ $filters.formatPercent(qbr[index] / 100) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="Object.values(ssar).length > 0">
+                    <h2>{{ $t("votequestionlist.ssar") }}</h2>
+                    {{ $t("votequestionlist.ssar_sum") }}:
+                    {{ ssarSum }}
+                    <div
+                      v-for="(o, index) in this.selection.note.o"
+                      :key="index"
+                    >
+                      <div class="row">
+                        <div class="col-3">
+                          <label :for="'R1-' + index">
+                            {{ o }} ({{ index }})
+                          </label>
+                        </div>
+                        <div class="col-9">
+                          <InputText
+                            :id="'R1-' + index"
+                            class="w1"
+                            v-model.number="ssar[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <Slider
+                            class="w1"
+                            v-model="ssar[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <div class="m-2">
+                            {{ $filters.formatPercent(ssar[index] / 100) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="Object.values(qsar).length > 0">
+                    <h2>{{ $t("votequestionlist.qsar") }}</h2>
+                    {{ $t("votequestionlist.qsar_sum") }}:
+                    {{ qsarSum }}
+                    <div
+                      v-for="(o, index) in this.selection.note.o"
+                      :key="index"
+                    >
+                      <div class="row">
+                        <div class="col-3">
+                          <label :for="'R1-' + index">
+                            {{ o }} ({{ index }})
+                          </label>
+                        </div>
+                        <div class="col-9">
+                          <InputText
+                            :id="'R1-' + index"
+                            class="w1"
+                            v-model.number="qsar[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <Slider
+                            class="w1"
+                            v-model="qsar[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <div class="m-2">
+                            {{ $filters.formatPercent(qsar[index] / 100) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="Object.values(stlr).length > 0">
+                    <h2>{{ $t("votequestionlist.stlr") }}</h2>
+                    {{ $t("votequestionlist.stlr_sum") }}:
+                    {{ stlrSum }}
+                    <div
+                      v-for="(o, index) in this.selection.note.o"
+                      :key="index"
+                    >
+                      <div class="row">
+                        <div class="col-3">
+                          <label :for="'R1-' + index">
+                            {{ o }} ({{ index }})
+                          </label>
+                        </div>
+                        <div class="col-9">
+                          <InputText
+                            :id="'R1-' + index"
+                            class="w1"
+                            v-model.number="stlr[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <Slider
+                            class="w1"
+                            v-model="stlr[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <div class="m-2">
+                            {{ $filters.formatPercent(stlr[index] / 100) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="Object.values(qtlr).length > 0">
+                    <h2>{{ $t("votequestionlist.qtlr") }}</h2>
+                    {{ $t("votequestionlist.qtlr_sum") }}:
+                    {{ qtlrSum }}
+                    <div
+                      v-for="(o, index) in this.selection.note.o"
+                      :key="index"
+                    >
+                      <div class="row">
+                        <div class="col-3">
+                          <label :for="'R1-' + index">
+                            {{ o }} ({{ index }})
+                          </label>
+                        </div>
+                        <div class="col-9">
+                          <InputText
+                            :id="'R1-' + index"
+                            class="w1"
+                            v-model.number="qtlr[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <Slider
+                            class="w1"
+                            v-model="qtlr[index]"
+                            style="width: 14rem"
+                            :disabled="true"
+                          />
+                          <div class="m-2">
+                            {{ $filters.formatPercent(qtlr[index] / 100) }}
                           </div>
                         </div>
                       </div>
@@ -361,10 +496,20 @@ export default {
       questions: [],
       answers: [],
       results: {},
-      resultsFirstCalc: {},
-      resultsFirstCalcSum: 0,
-      resultsSecondCalc: {},
-      resultsSecondCalcSum: 0,
+
+      sbr: {},
+      sbrSum: 0,
+      qbr: {},
+      qbrSum: 0,
+      ssar: {},
+      ssarSum: 0,
+      qsar: {},
+      qsarSum: 0,
+      stlr: {},
+      stlrSum: 0,
+      qtlr: {},
+      qtlrSum: 0,
+
       value2: 3,
       params: null,
       tx: null,
@@ -731,92 +876,318 @@ export default {
         // first calculation - trusted accounts
 
         const trusted = await this.getTrustedList();
-        console.log("trusted", trusted);
-        const totalResults = {};
-        for (let index in this.selection.note.o) {
-          totalResults[index] = 0;
-        }
-        let done = {};
-        for (let account in answersPerAccount) {
-          if (done[account] !== undefined) continue; // already processed
-          let accResult = this.getAccountResult(
-            account,
-            delegationsToAccount,
-            delegationPerAccount,
-            answersPerAccount,
-            trusted,
-            1,
-            account,
-            1
-          );
-          console.log("accResult", account, accResult);
-          for (let index in this.selection.note.o) {
-            totalResults[index] += accResult[index];
-          }
-          done[account] = true;
-        }
+        // calculate - 1 TL = 1 vote - simple weights
+        await this.calculateSTLR(
+          trusted,
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
+        // calculate - 1 TL = 1 vote - quadratic weights
+        await this.calculateQTLR(
+          trusted,
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
 
-        console.log("totalResults", totalResults);
-        this.resultsFirstCalc = {};
-        this.resultsFirstCalcSum = 0;
-        for (let index in totalResults) {
-          this.resultsFirstCalcSum +=
-            Math.round(totalResults[index] * 10000) / 10000;
-        }
-        for (let index in totalResults) {
-          this.resultsFirstCalc[index] =
-            Math.round(
-              (totalResults[index] / this.resultsFirstCalcSum) * 10000
-            ) / 100;
-        }
-        this.resultsFirstCalcSum =
-          Math.round(this.resultsFirstCalcSum * 1000) / 1000;
-        // second calculation - 1 algo = 1 vote
-        const coinResults = {};
-        for (let index in this.selection.note.o) {
-          coinResults[index] = 0;
-        }
-        done = {};
-        for (let account in answersPerAccount) {
-          if (done[account] !== undefined) continue; // already processed
-          let accResult = await this.getAccountResultCoinVote(
-            account,
-            delegationsToAccount,
-            delegationPerAccount,
-            answersPerAccount,
-            1,
-            account,
-            this.max,
-            1
-          );
-          console.log("accResult", account, accResult);
-          for (let index in this.selection.note.o) {
-            coinResults[index] += accResult[index];
-          }
-          done[account] = true;
-        }
+        // calculate - 1 algo = 1 vote - simple weights
+        await this.calculateSBR(
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
 
-        console.log("coinResults", coinResults);
-        this.resultsSecondCalc = {};
-        this.resultsSecondCalcSum = 0;
-        for (let index in coinResults) {
-          this.resultsSecondCalcSum +=
-            Math.round(coinResults[index] * 10000) / 10000;
-        }
-        for (let index in coinResults) {
-          this.resultsSecondCalc[index] =
-            Math.round(
-              (coinResults[index] / this.resultsSecondCalcSum) * 10000
-            ) / 100;
-        }
-        this.resultsSecondCalcSum =
-          Math.round(this.resultsSecondCalcSum * 1000) / 1000;
+        // calculate - 1 algo = 1 vote - quadratic weights
+        await this.calculateQBR(
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
+
+        // calculate - 1 account = 1 vote - simple weights
+        await this.calculateSSAR(
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
+
+        // calculate - 1 account = 1 vote - quadratic weights
+        await this.calculateQSAR(
+          answersPerAccount,
+          delegationPerAccount,
+          delegationsToAccount
+        );
 
         this.processingResults = false;
       } catch (e) {
         console.log("error:", e);
         this.processingResults = false;
       }
+    },
+    async calculateSBR(
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      const coinResults = {};
+      for (let index in this.selection.note.o) {
+        coinResults[index] = 0;
+      }
+      const done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = await this.getAccountResultCoinVote(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          1,
+          account,
+          this.max,
+          1,
+          false, // quadratic = false
+          false // 1 coin = 1 vote
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          coinResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      console.log("coinResults", coinResults);
+      this.sbr = {};
+      this.sbrSum = 0;
+      for (let index in coinResults) {
+        this.sbrSum += Math.round(coinResults[index] * 10000) / 10000;
+      }
+      for (let index in coinResults) {
+        this.sbr[index] =
+          Math.round((coinResults[index] / this.sbrSum) * 10000) / 100;
+      }
+      this.sbrSum = Math.round(this.sbrSum * 1000) / 1000;
+    },
+
+    async calculateQBR(
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      const coinResults = {};
+      for (let index in this.selection.note.o) {
+        coinResults[index] = 0;
+      }
+      const done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = await this.getAccountResultCoinVote(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          1,
+          account,
+          this.max,
+          1,
+          true, // quadratic = true
+          false // 1 coin = 1 vote
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          coinResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      console.log("coinResults", coinResults);
+      this.qbr = {};
+      this.qbrSum = 0;
+      for (let index in coinResults) {
+        this.qbrSum += Math.round(coinResults[index] * 10000) / 10000;
+      }
+      for (let index in coinResults) {
+        this.qbr[index] =
+          Math.round((coinResults[index] / this.qbrSum) * 10000) / 100;
+      }
+      this.qbrSum = Math.round(this.qbrSum * 1000) / 1000;
+    },
+
+    async calculateSSAR(
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      const coinResults = {};
+      for (let index in this.selection.note.o) {
+        coinResults[index] = 0;
+      }
+      const done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = await this.getAccountResultCoinVote(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          1,
+          account,
+          this.max,
+          1,
+          false, // quadratic = false
+          true // 1 account = 1 vote
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          coinResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      this.ssar = {};
+      this.ssarSum = 0;
+      for (let index in coinResults) {
+        this.ssarSum += Math.round(coinResults[index] * 10000) / 10000;
+      }
+      for (let index in coinResults) {
+        this.ssar[index] =
+          Math.round((coinResults[index] / this.ssarSum) * 10000) / 100;
+      }
+      this.ssarSum = Math.round(this.ssarSum * 1000) / 1000;
+    },
+
+    async calculateQSAR(
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      const coinResults = {};
+      for (let index in this.selection.note.o) {
+        coinResults[index] = 0;
+      }
+      const done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = await this.getAccountResultCoinVote(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          1,
+          account,
+          this.max,
+          1,
+          true, // quadratic = true
+          true // 1 account = 1 vote
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          coinResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      console.log("coinResults", coinResults);
+      this.qsar = {};
+      this.qsarSum = 0;
+      for (let index in coinResults) {
+        this.qsarSum += Math.round(coinResults[index] * 10000) / 10000;
+      }
+      for (let index in coinResults) {
+        this.qsar[index] =
+          Math.round((coinResults[index] / this.qsarSum) * 10000) / 100;
+      }
+      this.qsarSum = Math.round(this.qsarSum * 1000) / 1000;
+    },
+
+    async calculateSTLR(
+      trusted,
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      console.log("trusted", trusted);
+      const totalResults = {};
+      for (let index in this.selection.note.o) {
+        totalResults[index] = 0;
+      }
+      let done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = this.getAccountResult(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          trusted,
+          1,
+          account,
+          1,
+          false
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          totalResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      console.log("totalResults", totalResults);
+      this.stlr = {};
+      this.stlrSum = 0;
+      for (let index in totalResults) {
+        this.stlrSum += Math.round(totalResults[index] * 10000) / 10000;
+      }
+      for (let index in totalResults) {
+        this.stlr[index] =
+          Math.round((totalResults[index] / this.stlrSum) * 10000) / 100;
+      }
+      this.stlrSum = Math.round(this.stlrSum * 1000) / 1000;
+    },
+
+    async calculateQTLR(
+      trusted,
+      answersPerAccount,
+      delegationPerAccount,
+      delegationsToAccount
+    ) {
+      console.log("trusted", trusted);
+      const totalResults = {};
+      for (let index in this.selection.note.o) {
+        totalResults[index] = 0;
+      }
+      let done = {};
+      for (let account in answersPerAccount) {
+        if (done[account] !== undefined) continue; // already processed
+        let accResult = this.getAccountResult(
+          account,
+          delegationsToAccount,
+          delegationPerAccount,
+          answersPerAccount,
+          trusted,
+          1,
+          account,
+          1,
+          true
+        );
+        console.log("accResult", account, accResult);
+        for (let index in this.selection.note.o) {
+          totalResults[index] += accResult[index];
+        }
+        done[account] = true;
+      }
+
+      console.log("totalResults", totalResults);
+      this.qtlr = {};
+      this.qtlrSum = 0;
+      for (let index in totalResults) {
+        this.qtlrSum += Math.round(totalResults[index] * 10000) / 10000;
+      }
+      for (let index in totalResults) {
+        this.qtlr[index] =
+          Math.round((totalResults[index] / this.qtlrSum) * 10000) / 100;
+      }
+      this.qtlrSum = Math.round(this.qtlrSum * 1000) / 1000;
     },
     getAccountResult(
       account,
@@ -826,7 +1197,8 @@ export default {
       trusted,
       weight,
       voteAccount,
-      depth
+      depth,
+      quadratic
     ) {
       const r = {};
       for (let index in this.selection.note.o) {
@@ -834,18 +1206,41 @@ export default {
       }
       let failed = false;
       // count the real vote .. if the account is on the list
-      if (trusted[account] !== undefined) {
-        let sum = 0;
-        for (let index in this.selection.note.o) {
-          sum += answersPerAccount[voteAccount].response[index];
-          if (answersPerAccount[voteAccount].response[index] < 0) {
-            failed = true;
+      if (quadratic) {
+        if (trusted[account] !== undefined) {
+          let sum = 0;
+          for (let index in this.selection.note.o) {
+            sum +=
+              answersPerAccount[voteAccount].response[index] *
+              answersPerAccount[voteAccount].response[index];
+            if (answersPerAccount[voteAccount].response[index] < 0) {
+              failed = true;
+            }
+          }
+          if (sum > 0 && !failed) {
+            for (let index in this.selection.note.o) {
+              r[index] =
+                ((answersPerAccount[voteAccount].response[index] *
+                  answersPerAccount[voteAccount].response[index]) /
+                  sum) *
+                weight;
+            }
           }
         }
-        if (sum > 0 && !failed) {
+      } else {
+        if (trusted[account] !== undefined) {
+          let sum = 0;
           for (let index in this.selection.note.o) {
-            r[index] =
-              (answersPerAccount[voteAccount].response[index] / sum) * weight;
+            sum += answersPerAccount[voteAccount].response[index];
+            if (answersPerAccount[voteAccount].response[index] < 0) {
+              failed = true;
+            }
+          }
+          if (sum > 0 && !failed) {
+            for (let index in this.selection.note.o) {
+              r[index] =
+                (answersPerAccount[voteAccount].response[index] / sum) * weight;
+            }
           }
         }
       }
@@ -876,7 +1271,8 @@ export default {
             trusted,
             w,
             voteAccount,
-            depth + 1
+            depth + 1,
+            quadratic
           );
           console.log("delegation", sum, account, delegFrom, w, weight, sum);
           for (let index in this.selection.note.o) {
@@ -894,7 +1290,9 @@ export default {
       weight,
       voteAccount,
       round,
-      depth
+      depth,
+      quadratic,
+      normalizeBalanceTo1
     ) {
       const r = {};
       for (let index in this.selection.note.o) {
@@ -903,23 +1301,49 @@ export default {
       let failed = false;
       // count the real vote .. if the account is on the list
       let sum = 0;
-      for (let index in this.selection.note.o) {
-        sum += answersPerAccount[voteAccount].response[index];
-        if (answersPerAccount[voteAccount].response[index] < 0) {
-          failed = true;
-        }
-      }
       let balance = await this.getAccountBalanceAtRound({
         account,
         round,
         assetId: this.currentToken,
       });
-      if (sum > 0 && !failed) {
+      if (normalizeBalanceTo1) {
+        if (balance > 0) {
+          balance = 1;
+        }
+      }
+      if (quadratic) {
         for (let index in this.selection.note.o) {
-          r[index] =
-            (answersPerAccount[voteAccount].response[index] / sum) *
-            weight *
-            balance;
+          sum +=
+            answersPerAccount[voteAccount].response[index] *
+            answersPerAccount[voteAccount].response[index];
+          if (answersPerAccount[voteAccount].response[index] < 0) {
+            failed = true;
+          }
+        }
+        if (sum > 0 && !failed) {
+          for (let index in this.selection.note.o) {
+            r[index] =
+              ((answersPerAccount[voteAccount].response[index] *
+                answersPerAccount[voteAccount].response[index]) /
+                sum) *
+              weight *
+              balance;
+          }
+        }
+      } else {
+        for (let index in this.selection.note.o) {
+          sum += answersPerAccount[voteAccount].response[index];
+          if (answersPerAccount[voteAccount].response[index] < 0) {
+            failed = true;
+          }
+        }
+        if (sum > 0 && !failed) {
+          for (let index in this.selection.note.o) {
+            r[index] =
+              (answersPerAccount[voteAccount].response[index] / sum) *
+              weight *
+              balance;
+          }
         }
       }
       // check delegations

@@ -59,7 +59,7 @@ export default {
       if (!this.account) return "";
       let ret = "algorand://" + this.account;
       ret += "?amount=" + this.amount;
-      if (this.currentToken) {
+      if (this.currentToken && parseInt(this.currentToken) > 0) {
         ret += "&asset=" + this.currentToken;
       }
       ret += "&network=" + this.$store.state.config.env;

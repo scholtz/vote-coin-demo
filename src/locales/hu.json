@@ -128,7 +128,19 @@
     "trusted_list_results":"Eredmény a megbízható szavazók listája alapján",
     "hypercapitalism_results":"Eredmény az 1 érme 1 szavazat alapján",
     "vote_help":"Ha szavazni szeretnél, akkor légy szíves, add meg a súlyozást. Az egyes válaszoknál nulla és 100 pont közötti súlyozás adható. Ha csak egy választ akarsz kiválasztani, akkor adj neki 100 pontot, a többi válasznak pedig nulla pontot. Ha nem tudod a választ, akkor nem kell szavaznod, illetve az összes válaszhoz azonos pontot rendelhetsz hozzá. Ha az egyik válaszra 100 ponttal szavazol, egy másik válaszra pedig 20 ponttal, akkor az első válaszra a szavazati jogod 100/120 = 83%-ával szavazol, a másodikra 17 %-kal. Ha az összes lehetőséghez 100 pontot rendelsz, akkor a szavazati jogod eloszlása ugyanolyan lesz, mint ha mindegyik lehetőséghez 1 pontot rendeltél volna.",
-    "check_results":"Eredmények ellenőrzése"
+    "check_results":"Eredmények ellenőrzése",
+    "sbr":"Simple balance results",
+    "sbr_sum":"Sum of accounted tokens",
+    "qbr":"Quadratic balance results",
+    "qbr_sum":"Sum of accounted tokens",
+    "ssar":"Simple single account results",
+    "ssar_sum":"Number of accounted accounts",
+    "qsar":"Quadratic single account results",
+    "qsar_sum":"Number of accounted accounts",
+    "stlr":"Simple trusted list results",
+    "stlr_sum":"Number of accounted accounts",
+    "qtlr":"Quadratic trusted list results",
+    "qtlr_sum":"Number of accounted accounts"
   },
   "votetl":{
     "title":"A megbízható szavazók listájának kezelése",    
