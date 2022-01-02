@@ -7,7 +7,7 @@
       To be able to generate QR code, please specify your address. You will do
       the self transaction with specified note field.
     </p>
-    <input class="form-control" v-model="account" />
+    <input class="form-control" v-model="account" v-if="!sendTo" />
     <div v-if="account">
       <a :href="qrcode2">
         <QRCodeVue3
@@ -49,6 +49,7 @@ export default {
     currentToken: {
       type: String,
     },
+    sendTo: { type: String },
   },
 
   computed: {
@@ -56,8 +57,10 @@ export default {
       return this.qrcode.replace("algorand://", "web+algorand://");
     },
     qrcode() {
-      if (!this.account) return "";
-      let ret = "algorand://" + this.account;
+      let account = this.account;
+      if (this.sendTo) account = this.sendTo;
+      if (!account) return "";
+      let ret = "algorand://" + account;
       ret += "?amount=" + this.amount;
       if (this.currentToken && parseInt(this.currentToken) > 0) {
         ret += "&asset=" + this.currentToken;

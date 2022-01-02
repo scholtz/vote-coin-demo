@@ -4,6 +4,16 @@
       <QRCode :note="note" :amount="703" :currentToken="currentToken" />
       <button class="btn btn-light" @click="submit = false">Edit</button>
     </div>
+    <div v-else-if="submitResult">
+      <QRCode
+        :note="resultNote"
+        :amount="0"
+        :currentToken="currentToken"
+        :sendTo="questioner"
+      />
+      <button class="btn btn-light" @click="submitResult = false">Edit</button>
+    </div>
+
     <div v-else>
       <div v-if="loading || error">
         <div v-if="error" class="alert alert-danger">
@@ -434,6 +444,17 @@
                       </div>
                     </div>
                   </div>
+                  <div>
+                    <code>{{ resultNote }}</code>
+                  </div>
+                  <div>
+                    <button
+                      class="btn btn-primary my-3"
+                      @click="submitResult = true"
+                    >
+                      Submit my results for audit purposes
+                    </button>
+                  </div>
                 </div>
                 <div v-if="canVote">
                   <code>{{ note }}</code>
@@ -519,6 +540,7 @@ export default {
       selectedAnswer: {},
       processingResults: false,
       submit: false,
+      submitResult: false,
     };
   },
   watch: {
@@ -605,12 +627,36 @@ export default {
         JSON.stringify(json)
       );
     },
+    resultNote() {
+      if (!this.selection) return "";
+      if (!this.selection.note) return "";
+
+      const json = {};
+      json.q = this.selection.id;
+      json.r = {};
+      if (this.sbrSum > 0) json.r.sbr = this.sbr;
+      if (this.qbrSum > 0) json.r.qbr = this.qbr;
+      if (this.ssarSum > 0) json.r.ssar = this.ssar;
+      if (this.qsarSum > 0) json.r.qsar = this.qsar;
+      if (this.stlrSum > 0) json.r.stlr = this.stlr;
+      if (this.qtlrSum > 0) json.r.qtlr = this.qtlr;
+      return (
+        "avote-result/v1/" +
+        this.selection.id.substr(0, 10) +
+        ":j" +
+        JSON.stringify(json)
+      );
+    },
     isASAVote() {
       if (!this.currentToken) return false;
       return parseInt(this.currentToken) > 0;
     },
     currentToken() {
       return this.$store.state.vote.assetId;
+    },
+    questioner() {
+      if (!this.selection) return "";
+      return this.selection["sender"];
     },
   },
 
