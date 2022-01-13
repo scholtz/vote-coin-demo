@@ -4,11 +4,13 @@ const state = () => ({
     { name: "Algo", assetId: "-1", env: "mainnet" },
     { name: "Vote Coin", assetId: "452399768", env: "mainnet" },
     { name: "ASA Stats", assetId: "393537671", env: "mainnet" },
+    { name: "xBacked DAO", assetId: "466872875", env: "mainnet" },
     { name: "Algo", assetId: "-1", env: "testnet" },
     { name: "Vote Coin", assetId: "48806985", env: "testnet" },
     { name: "ASA Stats", assetId: "51768942", env: "testnet" },
     { name: "Algo", assetId: "-1", env: "sandbox" },
     { name: "Vote Coin", assetId: "12", env: "sandbox" },
+    
   ],
 });
 
