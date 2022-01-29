@@ -192,6 +192,7 @@ const actions = {
       });
     }
     localStorage.setItem("env", env);
+    console.log("set env", env);
   },
   async setNoRedirect({ commit }) {
     await commit("setNoRedirect");

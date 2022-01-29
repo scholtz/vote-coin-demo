@@ -182,6 +182,7 @@ export default {
         });
       }
       localStorage.setItem("env", this.env);
+      console.log("set env from settings", this.env);
     },
     algodHostConfig() {
       if (this.algodHost != this.algodHostConfig)

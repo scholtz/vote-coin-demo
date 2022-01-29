@@ -7,6 +7,7 @@ import Settings from "@/pages/Settings.vue";
 import VoteAsk from "@/pages/vote/Ask.vue";
 import VoteOverview from "@/pages/vote/Overview.vue";
 import VoteMyQuestions from "@/pages/vote/MyQuestions.vue";
+import VoteQuestionCover from "@/pages/vote/QuestionCover.vue";
 import VoteDelegate from "@/pages/vote/Delegate.vue";
 import VoteAnswers from "@/pages/vote/Answers.vue";
 import TrustedList from "@/pages/vote/TrustedList.vue";
@@ -45,6 +46,11 @@ const routes = [
     path: "/:env/:token/vote/overview",
     name: "VoteOverview",
     component: VoteOverview,
+  },
+  {
+    path: "/:env/:token/question/:questionId",
+    name: "VoteQuestionCover",
+    component: VoteQuestionCover,
   },
   {
     path: "/:env/:token/vote/my-questions",
