@@ -19,7 +19,6 @@
         </div>
       </div>
       <div v-else>
-        <VoteTopMenu />
         <VoteMenu current="tl" />
         <h1>{{ $t("votetl.title") }}</h1>
         <p>{{ $t("votetl.help1") }}</p>
@@ -124,7 +123,6 @@
 
 <script>
 import MainLayout from "../../layouts/Public.vue";
-import VoteTopMenu from "../../components/VoteTopMenu.vue";
 import VoteMenu from "../../components/VoteMenu.vue";
 import QRCode from "../../components/QRCode.vue";
 import { mapActions } from "vuex";
@@ -132,7 +130,6 @@ export default {
   components: {
     MainLayout,
     VoteMenu,
-    VoteTopMenu,
     QRCode,
   },
   props: {

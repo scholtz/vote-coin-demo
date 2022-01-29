@@ -983,18 +983,18 @@ export default {
       const done = {};
       for (let account in answersPerAccount) {
         if (done[account] !== undefined) continue; // already processed
-        let accResult = await this.getAccountResultCoinVote(
+        let accResult = await this.getAccountResultCoinVote({
           account,
           delegationsToAccount,
           delegationPerAccount,
           answersPerAccount,
-          1,
-          account,
-          this.max,
-          1,
-          false, // quadratic = false
-          false // 1 coin = 1 vote
-        );
+          weight: 1,
+          voteAccount: account,
+          round: this.max,
+          depth: 1,
+          quadratic: false, // quadratic = false
+          normalizeBalanceTo1: false, // 1 coin = 1 vote
+        });
         console.log("accResult", account, accResult);
         for (let index in this.selection.note.o) {
           coinResults[index] += accResult[index];
@@ -1027,18 +1027,18 @@ export default {
       const done = {};
       for (let account in answersPerAccount) {
         if (done[account] !== undefined) continue; // already processed
-        let accResult = await this.getAccountResultCoinVote(
+        let accResult = await this.getAccountResultCoinVote({
           account,
           delegationsToAccount,
           delegationPerAccount,
           answersPerAccount,
-          1,
-          account,
-          this.max,
-          1,
-          true, // quadratic = true
-          false // 1 coin = 1 vote
-        );
+          weight: 1,
+          voteAccount: account,
+          round: this.max,
+          depth: 1,
+          quadratic: true, // quadratic = true
+          normalizeBalanceTo1: false, // 1 coin = 1 vote
+        });
         console.log("accResult", account, accResult);
         for (let index in this.selection.note.o) {
           coinResults[index] += accResult[index];
@@ -1071,19 +1071,20 @@ export default {
       const done = {};
       for (let account in answersPerAccount) {
         if (done[account] !== undefined) continue; // already processed
-        let accResult = await this.getAccountResultCoinVote(
+        let accResult = await this.getAccountResultCoinVote({
           account,
           delegationsToAccount,
           delegationPerAccount,
           answersPerAccount,
-          1,
-          account,
-          this.max,
-          1,
-          false, // quadratic = false
-          true // 1 account = 1 vote
-        );
-        console.log("accResult", account, accResult);
+          weight: 1,
+          voteAccount: account,
+          round: this.max,
+          depth: 1,
+          quadratic: false, // quadratic = false
+          normalizeBalanceTo1: true, // 1 account = 1 vote
+          debug: true,
+        });
+        console.log("calculateSSAR", account, accResult, answersPerAccount);
         for (let index in this.selection.note.o) {
           coinResults[index] += accResult[index];
         }
@@ -1114,18 +1115,18 @@ export default {
       const done = {};
       for (let account in answersPerAccount) {
         if (done[account] !== undefined) continue; // already processed
-        let accResult = await this.getAccountResultCoinVote(
+        let accResult = await this.getAccountResultCoinVote({
           account,
           delegationsToAccount,
           delegationPerAccount,
           answersPerAccount,
-          1,
-          account,
-          this.max,
-          1,
-          true, // quadratic = true
-          true // 1 account = 1 vote
-        );
+          weight: 1,
+          voteAccount: account,
+          round: this.max,
+          depth: 1,
+          quadratic: true, // quadratic = true
+          normalizeBalanceTo1: true, // 1 account = 1 vote
+        });
         console.log("accResult", account, accResult);
         for (let index in this.selection.note.o) {
           coinResults[index] += accResult[index];
@@ -1328,7 +1329,7 @@ export default {
       }
       return r;
     },
-    async getAccountResultCoinVote(
+    async getAccountResultCoinVote({
       account,
       delegationsToAccount,
       delegationPerAccount,
@@ -1338,8 +1339,9 @@ export default {
       round,
       depth,
       quadratic,
-      normalizeBalanceTo1
-    ) {
+      normalizeBalanceTo1,
+      debug,
+    }) {
       const r = {};
       for (let index in this.selection.note.o) {
         r[index] = 0;
@@ -1356,6 +1358,9 @@ export default {
         if (balance > 0) {
           balance = 1;
         }
+      }
+      if (debug) {
+        console.log("getAccountResultCoinVote", balance);
       }
       if (quadratic) {
         for (let index in this.selection.note.o) {
@@ -1394,50 +1399,65 @@ export default {
       }
       // check delegations
       if (delegationsToAccount[account] !== undefined) {
-        console.log(
-          "delegationsToAccount[account]",
-          account,
-          delegationsToAccount[account]
-        );
+        if (debug) {
+          console.log(
+            "delegationsToAccount[account]",
+            account,
+            delegationsToAccount[account]
+          );
+        }
         for (let delegFrom in delegationsToAccount[account]) {
-          console.log("delegFrom", delegFrom);
+          if (debug) {
+            console.log("delegFrom", delegFrom);
+          }
           if (answersPerAccount[delegFrom] !== undefined) continue; //the delegated from account voted by it self
           if (delegFrom == account) continue; //self delegation
           let sum = 0;
-          console.log(
-            "delegationPerAccount[delegFrom] 2 ",
-            delegationPerAccount[delegFrom]
-          );
+          if (debug) {
+            console.log(
+              "delegationPerAccount[delegFrom] 2 ",
+              delegationPerAccount[delegFrom]
+            );
+          }
           for (let acc in delegationPerAccount[delegFrom].d) {
             sum += parseInt(delegationPerAccount[delegFrom].d[acc]);
           }
-          console.log("sum", sum);
+          if (debug) {
+            console.log("sum", sum);
+          }
           if (sum == 0) continue;
           let w = (weight * delegationPerAccount[delegFrom].d[account]) / sum;
           if (isNaN(w)) continue;
-          console.log("w", w);
+          if (debug) {
+            console.log("w", w);
+          }
           if (w < 0.0001) continue;
           if (depth > 100) continue;
-          const delegatedPowerFromOther = await this.getAccountResultCoinVote(
-            delegFrom,
+          const delegatedPowerFromOther = await this.getAccountResultCoinVote({
+            account: delegFrom,
             delegationsToAccount,
             delegationPerAccount,
             answersPerAccount,
-            w,
+            weight: w,
             voteAccount,
             round,
-            depth + 1
-          );
-          console.log(
-            "delegation",
-            round,
-            sum,
-            account,
-            delegFrom,
-            w,
-            weight,
-            sum
-          );
+            depth: depth + 1,
+            quadratic,
+            normalizeBalanceTo1,
+            debug,
+          });
+          if (debug) {
+            console.log(
+              "delegation",
+              round,
+              sum,
+              account,
+              delegFrom,
+              w,
+              weight,
+              sum
+            );
+          }
           for (let index in this.selection.note.o) {
             r[index] += delegatedPowerFromOther[index];
           }

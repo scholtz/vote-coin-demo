@@ -1,6 +1,5 @@
 <template>
   <MainLayout>
-    <VoteTopMenu />
     <VoteMenu current="overview" />
     <h1>{{ $t("voteoverview.title") }}</h1>
     <QuestionList />
@@ -9,7 +8,6 @@
 
 <script>
 import MainLayout from "../../layouts/Public.vue";
-import VoteTopMenu from "../../components/VoteTopMenu.vue";
 import VoteMenu from "../../components/VoteMenu.vue";
 import QuestionList from "./QuestionList";
 import { mapActions } from "vuex";
@@ -17,7 +15,6 @@ export default {
   components: {
     MainLayout,
     VoteMenu,
-    VoteTopMenu,
     QuestionList,
   },
   async mounted() {

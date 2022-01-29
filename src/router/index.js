@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Privacy from "@/pages/Privacy.vue";
 import NotFound from "@/pages/404.vue";
+import Main from "@/pages/Main.vue";
 import FAQ from "@/pages/FAQ.vue";
 import Settings from "@/pages/Settings.vue";
 import VoteAsk from "@/pages/vote/Ask.vue";
@@ -14,7 +15,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: VoteOverview,
+    component: Main,
   },
   {
     path: "/privacy-policy",

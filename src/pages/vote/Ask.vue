@@ -5,7 +5,6 @@
       <button class="btn btn-light" @click="submit = false">Edit</button>
     </div>
     <div v-else>
-      <VoteTopMenu />
       <VoteMenu current="ask" />
       <form @submit="submitQuestion">
         <h1>
@@ -151,7 +150,6 @@
 <script>
 import MainLayout from "../../layouts/Public.vue";
 import VoteMenu from "../../components/VoteMenu.vue";
-import VoteTopMenu from "../../components/VoteTopMenu.vue";
 import QRCode from "../../components/QRCode.vue";
 
 import { mapActions } from "vuex";
@@ -159,7 +157,6 @@ export default {
   components: {
     MainLayout,
     VoteMenu,
-    VoteTopMenu,
     QRCode,
   },
   data() {

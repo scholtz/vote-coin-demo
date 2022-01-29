@@ -1,10 +1,11 @@
 const state = () => ({
+  loaded: false,
   debug: false,
   LOGO: "/logo200.png",
   env: "mainnet",
-  algod: "https://algoexplorerapi.io",
+  algod: "https://node.algoexplorerapi.io",
   kmd: "",
-  indexer: "https://algoexplorerapi.io/idx2",
+  indexer: "https://algoindexer.algoexplorerapi.io",
   algodToken:
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   kmdToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -12,6 +13,7 @@ const state = () => ({
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   languages: ["en", "hu", "it", "nl", "sk", "cs"],
   noredirect: false, // redirect to account page after successfull login
+  api: "https://api.vote-coin.com/",
 });
 
 const mutations = {
@@ -26,6 +28,10 @@ const mutations = {
       for (var i = 0; i < methods.length; i++) {
         console[methods[i]] = function () {};
       }
+    }
+    if (value.api) {
+      state.api = value.api.replace(/\/$/, "");
+      console.log("api", state.api);
     }
 
     if (value.LOGO) {
@@ -60,6 +66,10 @@ const mutations = {
     const env = localStorage.getItem("env");
     if (env) {
       state.env = env;
+    } else if (value.env) {
+      state.env = value.env;
+    } else {
+      state.env = "testnet";
     }
     const kmdHost = localStorage.getItem("kmddHost");
     if (kmdHost) {
@@ -82,6 +92,8 @@ const mutations = {
     if (indexerToken) {
       state.indexerToken = indexerToken;
     }
+    state.loaded = true;
+
     console.log("hosts", algodHost, kmdHost, indexerHost);
   },
   setHosts(
@@ -141,7 +153,7 @@ const actions = {
     if (env == "mainnet") {
       dispatch("setHosts", {
         env: "mainnet",
-        algod: "https://algoexplorerapi.io",
+        algod: "https://node.algoexplorerapi.io",
         kmd: "?",
         indexer: "https://algoindexer.algoexplorerapi.io",
       });

@@ -11,7 +11,7 @@
       <option value="custom">{{ $t("settings.custom") }}</option>
     </select>
 
-    <table>
+    <table class="w-100">
       <tr>
         <td>AlgoD {{ $t("settings.host") }}:</td>
         <td>
@@ -143,7 +143,7 @@ export default {
       if (this.env == "mainnet") {
         this.setHosts({
           env: "mainnet",
-          algod: "https://algoexplorerapi.io",
+          algod: "https://node.algoexplorerapi.io",
           kmd: "?",
           indexer: "https://algoindexer.algoexplorerapi.io",
         });
@@ -151,9 +151,9 @@ export default {
       if (this.env == "testnet") {
         this.setHosts({
           env: "testnet",
-          algod: "https://testnet.algoexplorerapi.io",
+          algod: "https://node.testnet.algoexplorerapi.io",
           kmd: "?",
-          indexer: "https://testnet.algoexplorerapi.io/idx2",
+          indexer: "https://algoindexer.testnet.algoexplorerapi.io",
         });
       }
       if (this.env == "devnet") {

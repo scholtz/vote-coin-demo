@@ -1,12 +1,13 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/" v-if="$store.state.config.LOGO"
+      <a class="navbar-brand mx-2" href="/" v-if="$store.state.config.LOGO"
         ><img
           :src="$store.state.config.LOGO"
-          height="30"
+          height="50"
           :alt="$t('navbar.logo')"
         />
+        VoteCoin
       </a>
       <a class="navbar-brand" href="/" v-else>{{ $t("navbar.logo") }}</a>
 
@@ -22,19 +23,6 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item active">
-            <v-link class="nav-link" href="/">List questions</v-link>
-          </li>
-          <li class="nav-item active">
-            <v-link class="nav-link" href="/faq">{{ $t("navbar.faq") }}</v-link>
-          </li>
-          <li class="nav-item active">
-            <v-link class="nav-link" href="/privacy-policy">{{
-              $t("navbar.privacy_policy")
-            }}</v-link>
-          </li>
-        </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <Dropdown
             v-model="$i18n.locale"
@@ -68,15 +56,16 @@
             </template>
           </Dropdown>
 
-          <li class="nav-item active">
-            <VLink class="nav-link" href="/settings">{{
-              $t("navbar.settings")
-            }}</VLink>
+          <li class="nav-item active mr-2">
+            <VLink class="nav-link" href="/settings"
+              ><i class="pi pi-cog"></i>
+            </VLink>
           </li>
         </ul>
       </div>
     </div>
   </nav>
+  <div style="border-top: 1px solid gray" class="mb-2"></div>
 </template>
 <script>
 import VLink from "../components/VLink.vue";
