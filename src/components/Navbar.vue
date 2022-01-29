@@ -56,9 +56,19 @@
             </template>
           </Dropdown>
 
+          <li class="nav-item active">
+            <VLink class="nav-link" href="/faq"
+              ><i class="pi pi-question-circle" :title="$t('navbar.faq')"></i
+            ></VLink>
+          </li>
+          <li class="nav-item active">
+            <VLink class="nav-link" href="/privacy-policy"
+              ><i class="pi pi-id-card" :title="$t('navbar.privacy_policy')"></i
+            ></VLink>
+          </li>
           <li class="nav-item active mr-2">
             <VLink class="nav-link" href="/settings"
-              ><i class="pi pi-cog"></i>
+              ><i class="pi pi-cog" :title="$t('navbar.settings')"></i>
             </VLink>
           </li>
         </ul>
