@@ -13,7 +13,7 @@ const state = () => ({
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   languages: ["en", "hu", "it", "nl", "sk", "cs"],
   noredirect: false, // redirect to account page after successfull login
-  api: "https://api.vote-coin.com/",
+  api: "https://api.vote-coin.com",
 });
 
 const mutations = {
