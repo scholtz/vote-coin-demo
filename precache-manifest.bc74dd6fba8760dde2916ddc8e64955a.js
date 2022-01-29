@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/apple-touch-icon.png"
   },
   {
-    "revision": "51922a8a5c7ce059bd7f",
+    "revision": "02edfc6903dd63c28136",
     "url": "/css/app.f18cf31b.css"
   },
   {
@@ -2145,18 +2145,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   },
   {
     "revision": "c99daa14dcbadb15fc59e1f808e1c528",
-    "url": "/img/android-chrome-192x192 copy.png"
-  },
-  {
-    "revision": "5271d3890484d12eac012a35c888b513",
     "url": "/img/android-chrome-192x192.png"
   },
   {
     "revision": "32ea3d7e212cb8c52c851ae68a2a1930",
-    "url": "/img/android-chrome-512x512 copy.png"
-  },
-  {
-    "revision": "f2274240a066ab066ec744dd94cf1f0b",
     "url": "/img/android-chrome-512x512.png"
   },
   {
@@ -2212,12 +2204,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/tether-usdt-logo-96.png"
   },
   {
-    "revision": "0f1fc39091ab5ea7f58fad8a9b5bb8be",
+    "revision": "e9cba76b563932cfa023163cd1d40cc1",
     "url": "/index.html"
   },
   {
-    "revision": "51922a8a5c7ce059bd7f",
-    "url": "/js/app.54af6899.js"
+    "revision": "02edfc6903dd63c28136",
+    "url": "/js/app.7c673035.js"
   },
   {
     "revision": "659d3112455526acc509",
