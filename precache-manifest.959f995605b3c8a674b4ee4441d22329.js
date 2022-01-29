@@ -2144,12 +2144,24 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/algorand-algo-logo.svg"
   },
   {
+    "revision": "c99daa14dcbadb15fc59e1f808e1c528",
+    "url": "/img/android-chrome-192x192 copy.png"
+  },
+  {
     "revision": "5271d3890484d12eac012a35c888b513",
     "url": "/img/android-chrome-192x192.png"
   },
   {
+    "revision": "32ea3d7e212cb8c52c851ae68a2a1930",
+    "url": "/img/android-chrome-512x512 copy.png"
+  },
+  {
     "revision": "f2274240a066ab066ec744dd94cf1f0b",
     "url": "/img/android-chrome-512x512.png"
+  },
+  {
+    "revision": "af7acc5edd3c38b2ac71176e12ad43ce",
+    "url": "/img/apple-touch-icon copy.png"
   },
   {
     "revision": "7237d4bc96dd9e8abab472231c698451",
@@ -2164,8 +2176,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/countries_flags.svg"
   },
   {
+    "revision": "0af78ea8842c5b54b94655514a02164a",
+    "url": "/img/favicon copy.ico"
+  },
+  {
+    "revision": "e177617f46d2cb0d63e8aa14a338b199",
+    "url": "/img/favicon-16x16 copy.png"
+  },
+  {
     "revision": "9af3e7d0cd486107d1f9a3a9ee7b0d0a",
     "url": "/img/favicon-16x16.png"
+  },
+  {
+    "revision": "1442e7f2dbb8bb8b092eb1a64f7744f0",
+    "url": "/img/favicon-32x32 copy.png"
   },
   {
     "revision": "343c07dc14b2402160e97782e9bf7301",
