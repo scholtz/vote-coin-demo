@@ -1,20 +1,31 @@
 <template>
   <PublicLayout>
     <div class="container-fluid">
-      <div class="row" v-if="false">
+      <div class="row">
         <div class="col-9">
           <div class="input-group mb-3">
-            <input class="form-control" />
+            <input
+              class="form-control"
+              v-model="searchText"
+              @keyup="searchClick"
+            />
             <button
               class="btn btn-outline-secondary"
               type="button"
               id="button-addon2"
+              @click="searchClick"
             >
-              Button
+              Search
             </button>
           </div>
         </div>
-        <div class="col-3 text-end">10 spaces</div>
+        <div class="col-3 text-end">
+          {{
+            Object.values(this.spaces).length +
+            Object.values(this.visibleSpaces).length
+          }}
+          spaces
+        </div>
       </div>
 
       <div
@@ -47,7 +58,7 @@
 import PublicLayout from "../layouts/Public.vue";
 import { mapActions } from "vuex";
 import MainScreenItem from "../components/MainScreenItem.vue";
-
+import slugify from "slugify";
 export default {
   components: {
     PublicLayout,
@@ -58,6 +69,7 @@ export default {
       visibleSpaces: [],
       spaces: [],
       loading: false,
+      searchText: "",
     };
   },
   watch: {
@@ -98,6 +110,29 @@ export default {
       openError: "toast/openError",
       openSuccess: "toast/openSuccess",
     }),
+    searchClick(e) {
+      e.preventDefault();
+
+      let filteredSpaces = [...this.$store.state.space.spaces];
+      const slugSettings = { lower: true, strict: true };
+      const slug = slugify(this.searchText, slugSettings);
+      if (slug == "") {
+        this.visibleSpaces = [];
+        this.init();
+        return;
+      }
+      console.log(slug);
+      filteredSpaces = filteredSpaces.filter(
+        (s) =>
+          slugify("" + s.asa).indexOf(slug) >= 0 ||
+          slugify(s.name, slugSettings).indexOf(slug) >= 0 ||
+          slugify(s.unit, slugSettings).indexOf(slug) >= 0
+      );
+      console.log("filteredSpaces", filteredSpaces);
+      this.spaces = filteredSpaces;
+      this.visibleSpaces = [];
+      this.fetchData();
+    },
     async init() {
       this.spaces = [...this.$store.state.space.spaces];
       this.fetchData();
