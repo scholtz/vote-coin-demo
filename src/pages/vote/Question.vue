@@ -30,22 +30,20 @@
       </div>
       <div v-else>
         <div v-if="selection && this.selection.note">
-          {{ $t("votequestionlist.list") }}
-
           <table class="w-100">
             <tr>
               <th>{{ $t("votequestionlist.id") }}:</th>
               <td>{{ this.selection["id"] }}</td>
             </tr>
-            <tr>
+            <tr v-if="debug">
               <th>{{ $t("votequestionlist.round") }}:</th>
               <td>{{ this.selection.round }}</td>
             </tr>
-            <tr v-if="this.selection && this.selection.note">
+            <tr v-if="debug && this.selection && this.selection.note">
               <th>{{ $t("votequestionlist.maxround") }}:</th>
               <td>{{ this.max }}</td>
             </tr>
-            <tr v-if="this.params">
+            <tr v-if="debug && this.params">
               <th>{{ $t("votequestionlist.current_round") }}:</th>
               <td>{{ this.params.firstRound }}</td>
             </tr>
@@ -53,6 +51,18 @@
               <th>{{ $t("votequestionlist.round_time") }}:</th>
               <td>
                 {{ $filters.formatDateTime(this.selection["round-time"]) }}
+              </td>
+            </tr>
+            <tr>
+              <th>Estimated end time:</th>
+              <td>
+                <div>{{ $filters.formatDateTime(this.endTime) }}</div>
+                <div>
+                  <Countdown
+                    class="text-start"
+                    :deadlineISO="this.endTimeIso"
+                  />
+                </div>
               </td>
             </tr>
             <tr>
@@ -444,13 +454,17 @@
 import { mapActions } from "vuex";
 import AnswersList from "./AnswersList";
 import QRCode from "../../components/QRCode.vue";
+import { Countdown } from "vue3-flip-countdown";
+
 export default {
   components: {
     AnswersList,
     QRCode,
+    Countdown,
   },
   data() {
     return {
+      debug: false,
       loading: false,
       questions: [],
       answers: [],
@@ -522,6 +536,28 @@ export default {
   computed: {
     loaded() {
       return this.$store.state.config.loaded;
+    },
+    endTime() {
+      const elapsedBlocks = this.params.firstRound - this.selection.round;
+      const currentTime = Math.floor(Date.now() / 1000);
+      const elapsedTime = currentTime - this.selection["round-time"];
+      const timePerBlock = elapsedTime / elapsedBlocks;
+      const diffStartEndInBlocks = this.max - this.selection.round;
+      /*
+      console.log(
+        "elapsedBlocks,currentTime,elapsedTime,timePerBlock,diffStartEndInBlocks",
+        elapsedBlocks,
+        currentTime,
+        elapsedTime,
+        timePerBlock,
+        diffStartEndInBlocks
+      );*/
+      return Math.round(
+        diffStartEndInBlocks * timePerBlock + this.selection["round-time"]
+      );
+    },
+    endTimeIso() {
+      return new Date(this.endTime * 1000).toISOString();
     },
     max() {
       if (!this.selection || !this.selection.note) return 0;

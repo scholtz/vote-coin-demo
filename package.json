@@ -36,6 +36,7 @@
     "uuid": "^8.3.2",
     "vue-i18n": "^9.1.9",
     "vue-router": "^4.0.12",
+    "vue3-flip-countdown": "^0.1.6",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
