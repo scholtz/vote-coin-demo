@@ -1,6 +1,22 @@
 <template>
   <PublicLayout>
     <div class="container-fluid">
+      <div class="row" v-if="false">
+        <div class="col-9">
+          <div class="input-group mb-3">
+            <input class="form-control" />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="button-addon2"
+            >
+              Button
+            </button>
+          </div>
+        </div>
+        <div class="col-3 text-end">10 spaces</div>
+      </div>
+
       <div
         class="
           row
@@ -15,81 +31,12 @@
         "
       >
         <div
-          v-for="space in $store.state.space.spaces"
+          v-for="space in visibleSpaces"
           :key="space.asa"
           class="col"
+          :ref="`Space${space.asa}`"
         >
-          <div
-            class="card p-4"
-            @click="
-              $router.push(
-                `/${$store.state.config.env}/${space.asa}/vote/overview`
-              )
-            "
-          >
-            <img
-              class="card-img"
-              style="max-width: 100px; margin: 0 auto"
-              :src="space.iconPath"
-              :alt="space.unit"
-            />
-            <h2 class="text-center mt-4"></h2>
-            <RouterLink
-              :to="`/${$store.state.config.env}/${space.asa}/vote/overview`"
-              class="btn btn-light rounded-pill border border-primary"
-              >Join {{ space.name }}</RouterLink
-            >
-            <div class="mt-3 row sm-text">
-              <div class="col">
-                <span
-                  class="
-                    rounded-pill
-                    bg-white
-                    px-2
-                    py-1
-                    border border-secondary
-                    text-nowrap
-                  "
-                  title="Evetns"
-                >
-                  <i class="pi pi-bell sm-text" />
-                  {{ space.events }}
-                </span>
-              </div>
-              <div class="col text-center">
-                <span
-                  class="
-                    rounded-pill
-                    bg-white
-                    px-2
-                    py-1
-                    border border-secondary
-                    text-nowrap
-                  "
-                  title="Votings"
-                >
-                  <i class="pi pi-book sm-text" />
-                  {{ space.questions }}
-                </span>
-              </div>
-              <div class="col text-end">
-                <span
-                  class="
-                    rounded-pill
-                    bg-white
-                    px-2
-                    py-1
-                    border border-secondary
-                    text-nowrap
-                  "
-                  title="Delegations"
-                >
-                  <i class="pi pi-arrow-circle-right sm-text" />
-                  {{ space.delegations }}
-                </span>
-              </div>
-            </div>
-          </div>
+          <MainScreenItem :asa="space.asa" />
         </div>
       </div>
     </div>
@@ -99,19 +46,25 @@
 <script>
 import PublicLayout from "../layouts/Public.vue";
 import { mapActions } from "vuex";
-import { RouterLink } from "vue-router";
+import MainScreenItem from "../components/MainScreenItem.vue";
+
 export default {
   components: {
     PublicLayout,
-    RouterLink,
+    MainScreenItem,
   },
   data() {
     return {
+      visibleSpaces: [],
       spaces: [],
+      loading: false,
     };
   },
   watch: {
     async loaded() {
+      this.getSpaces();
+    },
+    async storeSpacesLength() {
       if (this.loaded) await this.init();
     },
   },
@@ -119,10 +72,25 @@ export default {
     loaded() {
       return this.$store.state.config.loaded;
     },
+    storeSpacesLength() {
+      if (
+        !this.loaded ||
+        !this.$store.state.space ||
+        !this.$store.state.space.spaces
+      )
+        return 0;
+      return this.$store.state.space.spaces.length;
+    },
   },
-  async created() {},
+
   async mounted() {
     if (this.loaded) await this.init();
+  },
+  created() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  unmounted() {
+    window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
     ...mapActions({
@@ -131,14 +99,52 @@ export default {
       openSuccess: "toast/openSuccess",
     }),
     async init() {
-      this.spaces = await this.getSpaces();
+      this.spaces = [...this.$store.state.space.spaces];
+      this.fetchData();
+    },
+    pullSpace() {
+      const spaceSlice = this.spaces.slice(0, 1);
+      const space = spaceSlice[0];
+      this.spaces = this.spaces.filter((e) => e.asa !== space.asa);
+      return space;
+    },
+    fetchData() {
+      this.loading = true;
+      for (var i = 0; i < 6; i++) {
+        if (this.spaces.length > 0) {
+          this.visibleSpaces.push(this.pullSpace());
+        }
+      }
+      if (this.spaces.length > 0) {
+        const that = this;
+        setTimeout(() => {
+          that.checkLastSpace();
+        }, 100);
+      }
+      this.loading = false;
+    },
+    checkLastSpace() {
+      const last = this.visibleSpaces.at(-1);
+      const ref = this.$refs[`Space${last.asa}`].at(0);
+      if (ref && this.isScrolledIntoView(ref)) {
+        this.fetchData();
+      }
+    },
+    isScrolledIntoView(el) {
+      var rect = el.getBoundingClientRect();
+      var elemTop = rect.top;
+      var elemBottom = rect.bottom;
+
+      // Only completely visible elements return true:
+      var isVisible = elemTop >= 0 && elemBottom <= window.innerHeight + 50;
+      // Partially visible elements return true:
+      //isVisible = elemTop < window.innerHeight && elemBottom >= 0;
+      return isVisible;
+    },
+    handleScroll() {
+      this.checkLastSpace();
+      // Any code to be executed when the window is scrolled
     },
   },
 };
 </script>
-<style scoped>
-.sm-text {
-  font-size: 0.8em;
-  color: #999;
-}
-</style>
