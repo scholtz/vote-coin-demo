@@ -24,6 +24,53 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item active mr-2">
+            <a
+              class="nav-link"
+              href="https://discord.gg/mPW36G6xqn"
+              target="_blank"
+              ><i class="pi pi-discord" title="The Vote Coin Discord"></i>
+            </a>
+          </li>
+          <li class="nav-item active mr-2">
+            <a
+              class="nav-link"
+              href="https://twitter.com/TheVoteCoin"
+              target="_blank"
+              ><i class="pi pi-twitter" title="The Vote Coin Twitter"></i>
+            </a>
+          </li>
+          <li class="nav-item active mr-2">
+            <a
+              class="nav-link"
+              href="https://www.vote-coin.com/specifications/introduction"
+              target="_blank"
+              ><i class="pi pi-table" title="The Vote Coin Specifications"></i>
+            </a>
+          </li>
+          <li class="nav-item active mr-2">
+            <a
+              class="nav-link"
+              href="https://app.tinyman.org/#/swap?asset_in=31566704&amp;asset_out=452399768"
+              target="_blank"
+              ><i class="pi pi-shopping-cart" title="The Vote Coin Discord"></i>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <VLink class="nav-link" href="/faq"
+              ><i class="pi pi-question-circle" :title="$t('navbar.faq')"></i
+            ></VLink>
+          </li>
+          <li class="nav-item active">
+            <VLink class="nav-link" href="/privacy-policy"
+              ><i class="pi pi-id-card" :title="$t('navbar.privacy_policy')"></i
+            ></VLink>
+          </li>
+          <li class="nav-item active mr-2">
+            <VLink class="nav-link" href="/settings"
+              ><i class="pi pi-cog" :title="$t('navbar.settings')"></i>
+            </VLink>
+          </li>
           <Dropdown
             v-model="$i18n.locale"
             :options="$store.state.config.languages"
@@ -55,22 +102,6 @@
               </div>
             </template>
           </Dropdown>
-
-          <li class="nav-item active">
-            <VLink class="nav-link" href="/faq"
-              ><i class="pi pi-question-circle" :title="$t('navbar.faq')"></i
-            ></VLink>
-          </li>
-          <li class="nav-item active">
-            <VLink class="nav-link" href="/privacy-policy"
-              ><i class="pi pi-id-card" :title="$t('navbar.privacy_policy')"></i
-            ></VLink>
-          </li>
-          <li class="nav-item active mr-2">
-            <VLink class="nav-link" href="/settings"
-              ><i class="pi pi-cog" :title="$t('navbar.settings')"></i>
-            </VLink>
-          </li>
         </ul>
       </div>
     </div>
