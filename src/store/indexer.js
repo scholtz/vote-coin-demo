@@ -3,6 +3,13 @@ const state = () => ({
   assets: [],
   balance: {},
 });
+const asyncdelay = (delayInms) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(2);
+    }, delayInms);
+  });
+};
 
 const mutations = {
   setAsset(state, assetInfo) {
@@ -32,6 +39,47 @@ const actions = {
     } catch (error) {
       console.log("error", error, dispatch);
     }
+  },
+  async loadAllAccountsBalancesAtRound(
+    { dispatch, commit },
+    { assetId, round }
+  ) {
+    let loaded = 0;
+    try {
+      console.log("this.state.config.indexer", this.state.config.indexer);
+      const url = new URL(this.state.config.indexer);
+      const indexerClient = new algosdk.Indexer(
+        this.state.config.indexerToken,
+        this.state.config.indexer,
+        url.port
+      );
+      let ret = await indexerClient
+        .lookupAssetBalances(assetId)
+        .round(round)
+        .do();
+      while (ret.balances && ret.balances.length > 0 && ret["next-token"]) {
+        for (let index in ret.balances) {
+          const row = ret.balances[index];
+          commit("setBalance", {
+            account: row["address"],
+            round,
+            assetId,
+            balance: row.amount,
+          });
+          loaded += row.amount;
+        }
+        await asyncdelay(500);
+        ret = await indexerClient
+          .lookupAssetBalances(assetId)
+          .round(round)
+          .nextToken(ret["next-token"])
+          .do();
+      }
+      console.log(this.state);
+    } catch (error) {
+      console.log("error", error, dispatch);
+    }
+    return loaded;
   },
   async searchForTransactions({ dispatch }, { addr, note }) {
     try {
