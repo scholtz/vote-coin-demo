@@ -1303,15 +1303,13 @@ export default {
       let failed = false;
       // count the real vote .. if the account is on the list
       let sum = 0;
-      let balance = await this.getAccountBalanceAtRound({
-        account,
-        round,
-        assetId: this.currentToken,
-      });
-      if (normalizeBalanceTo1) {
-        if (balance > 0) {
-          balance = 1;
-        }
+      let balance = 1;
+      if (!normalizeBalanceTo1) {
+        await this.getAccountBalanceAtRound({
+          account,
+          round,
+          assetId: this.currentToken,
+        });
       }
       if (debug) {
         console.log("getAccountResultCoinVote", balance);
