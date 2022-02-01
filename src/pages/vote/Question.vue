@@ -181,7 +181,13 @@
                   <div v-if="Object.values(sbr).length > 0">
                     <h2>{{ $t("votequestionlist.sbr") }}</h2>
                     {{ $t("votequestionlist.sbr_sum") }}:
-                    {{ sbrSum }}
+                    {{
+                      $filters.formatCurrency(
+                        sbrSum,
+                        asset["unit-name"],
+                        asset.decimals
+                      )
+                    }}
                     <div
                       v-for="(o, index) in this.selection.note.o"
                       :key="index"
@@ -217,7 +223,13 @@
                   <div v-if="Object.values(qbr).length > 0">
                     <h2>{{ $t("votequestionlist.qbr") }}</h2>
                     {{ $t("votequestionlist.qbr_sum") }}:
-                    {{ qbrSum }}
+                    {{
+                      $filters.formatCurrency(
+                        qbrSum,
+                        asset["unit-name"],
+                        asset.decimals
+                      )
+                    }}
                     <div
                       v-for="(o, index) in this.selection.note.o"
                       :key="index"
@@ -493,6 +505,7 @@ export default {
       processingResults: false,
       submit: false,
       submitResult: false,
+      asset: {},
     };
   },
   watch: {
@@ -637,6 +650,7 @@ export default {
     currentToken() {
       return this.$store.state.vote.assetId;
     },
+
     questioner() {
       if (!this.selection) return "";
       return this.selection["sender"];
@@ -664,6 +678,7 @@ export default {
       waitForConfirmation: "algod/waitForConfirmation",
       axiosGet: "axios/get",
       getAccountBalanceAtRound: "indexer/getAccountBalanceAtRound",
+      getAsset: "indexer/getAsset",
     }),
     async loadSelection() {
       const res = await this.getTransaction({ txid: this.questionId });
@@ -692,10 +707,15 @@ export default {
 
       console.log("this.selection", this.selection);
     },
+
     async initLoad() {
       try {
         if (!this.loaded) return;
         this.loading = true;
+
+        this.asset = await this.getAsset({ assetIndex: this.currentToken });
+        console.log("this.asset", this.asset);
+
         this.params = await this.getTransactionParams();
         await this.loadSelection();
         this.loading = false;
