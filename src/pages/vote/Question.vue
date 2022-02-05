@@ -494,6 +494,7 @@ export default {
       stlrSum: 0,
       qtlr: {},
       qtlrSum: 0,
+      totalResults: {},
 
       value2: 3,
       params: null,
@@ -630,12 +631,15 @@ export default {
       const json = {};
       json.q = this.selection.id;
       json.r = {};
-      if (this.sbrSum > 0) json.r.sbr = this.sbr;
-      if (this.qbrSum > 0) json.r.qbr = this.qbr;
-      if (this.ssarSum > 0) json.r.ssar = this.ssar;
-      if (this.qsarSum > 0) json.r.qsar = this.qsar;
-      if (this.stlrSum > 0) json.r.stlr = this.stlr;
-      if (this.qtlrSum > 0) json.r.qtlr = this.qtlr;
+      console.log("this.totalResults.sbr", this.totalResults);
+      if (this.totalResults) {
+        if (this.sbrSum > 0) json.r.sbr = this.totalResults.sbr;
+        if (this.qbrSum > 0) json.r.qbr = this.totalResults.qbr;
+        if (this.ssarSum > 0) json.r.ssar = this.totalResults.ssar;
+        if (this.qsarSum > 0) json.r.qsar = this.totalResults.qsar;
+        if (this.stlrSum > 0) json.r.stlr = this.totalResults.stlr;
+        if (this.qtlrSum > 0) json.r.qtlr = this.totalResults.qtlr;
+      }
       return (
         "avote-result/v1/" +
         this.selection.id.substr(0, 10) +
@@ -996,6 +1000,12 @@ export default {
           Math.round((coinResults[index] / this.sbrSum) * 10000) / 100;
       }
       this.sbrSum = Math.round(this.sbrSum * 1000) / 1000;
+      this.totalResults.sbr = coinResults;
+      // round results
+      for (let index in this.totalResults.sbr) {
+        this.totalResults.sbr[index] =
+          Math.round(this.totalResults.sbr[index] * 100000) / 100000;
+      }
     },
 
     async calculateQBR(
@@ -1029,17 +1039,23 @@ export default {
         done[account] = true;
       }
 
-      console.log("coinResults", coinResults);
+      this.totalResults.qbr = coinResults;
       this.qbr = {};
       this.qbrSum = 0;
       for (let index in coinResults) {
         this.qbrSum += Math.round(coinResults[index] * 10000) / 10000;
       }
+      console.log("QBR coinResults", coinResults, this.qbrSum);
       for (let index in coinResults) {
         this.qbr[index] =
           Math.round((coinResults[index] / this.qbrSum) * 10000) / 100;
       }
       this.qbrSum = Math.round(this.qbrSum * 1000) / 1000;
+      // round results
+      for (let index in this.totalResults.qbr) {
+        this.totalResults.qbr[index] =
+          Math.round(this.totalResults.qbr[index] * 100000) / 100000;
+      }
     },
 
     async calculateSSAR(
@@ -1084,6 +1100,11 @@ export default {
           Math.round((coinResults[index] / this.ssarSum) * 10000) / 100;
       }
       this.ssarSum = Math.round(this.ssarSum * 1000) / 1000;
+      this.totalResults.ssar = coinResults;
+      for (let index in this.totalResults.ssar) {
+        this.totalResults.ssar[index] =
+          Math.round(this.totalResults.ssar[index] * 100000) / 100000;
+      }
     },
 
     async calculateQSAR(
@@ -1128,6 +1149,11 @@ export default {
           Math.round((coinResults[index] / this.qsarSum) * 10000) / 100;
       }
       this.qsarSum = Math.round(this.qsarSum * 1000) / 1000;
+      this.totalResults.qsar = coinResults;
+      for (let index in this.totalResults.qsar) {
+        this.totalResults.qsar[index] =
+          Math.round(this.totalResults.qsar[index] * 100000) / 100000;
+      }
     },
 
     async calculateSTLR(
@@ -1173,6 +1199,11 @@ export default {
           Math.round((totalResults[index] / this.stlrSum) * 10000) / 100;
       }
       this.stlrSum = Math.round(this.stlrSum * 1000) / 1000;
+      this.totalResults.stlr = totalResults;
+      for (let index in this.totalResults.stlr) {
+        this.totalResults.stlr[index] =
+          Math.round(this.totalResults.stlr[index] * 100000) / 100000;
+      }
     },
 
     async calculateQTLR(
@@ -1218,6 +1249,11 @@ export default {
           Math.round((totalResults[index] / this.qtlrSum) * 10000) / 100;
       }
       this.qtlrSum = Math.round(this.qtlrSum * 1000) / 1000;
+      this.totalResults.qtlr = totalResults;
+      for (let index in this.totalResults.qtlr) {
+        this.totalResults.qtlr[index] =
+          Math.round(this.totalResults.qtlr[index] * 100000) / 100000;
+      }
     },
     getAccountResult(
       account,

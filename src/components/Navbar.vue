@@ -43,6 +43,14 @@
           <li class="nav-item active mr-2">
             <a
               class="nav-link"
+              href="https://www.facebook.com/TheVoteCoin/"
+              target="_blank"
+              ><i class="pi pi-facebook" title="The Vote Coin Facebook"></i>
+            </a>
+          </li>
+          <li class="nav-item active mr-2">
+            <a
+              class="nav-link"
               href="https://www.vote-coin.com/specifications/introduction"
               target="_blank"
               ><i class="pi pi-table" title="The Vote Coin Specifications"></i>
