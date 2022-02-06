@@ -140,6 +140,7 @@ export default {
       processingResults: false,
       submit: false,
       submitResult: false,
+      useApiData: true,
     };
   },
   watch: {
@@ -278,6 +279,7 @@ export default {
       waitForConfirmation: "algod/waitForConfirmation",
       axiosGet: "axios/get",
       getAccountBalanceAtRound: "indexer/getAccountBalanceAtRound",
+      getSpaceQuestions: "space/getSpaceQuestions",
     }),
     async initLoad() {
       try {
@@ -285,11 +287,18 @@ export default {
         this.params = await this.getTransactionParams();
         let txs = null;
         if (this.isASAVote) {
-          txs = await this.searchForTokenTransactionsWithNoteAndAmount({
-            note: "avote-question/",
-            amount: 702,
-            assetId: this.currentToken,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceQuestions({
+              assetId: this.currentToken,
+            });
+            console.log("txs", txs);
+          } else {
+            txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+              note: "avote-question/",
+              amount: 702,
+              assetId: this.currentToken,
+            });
+          }
         } else {
           txs = await this.searchForTransactionsWithNoteAndAmount({
             note: "avote-question/",
