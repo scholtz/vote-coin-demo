@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container-fluid">
-      <a class="navbar-brand mx-2" href="/" v-if="$store.state.config.LOGO"
+      <a class="navbar-brand mx-3" href="/" v-if="$store.state.config.LOGO"
         ><img
           :src="$store.state.config.LOGO"
           height="50"
