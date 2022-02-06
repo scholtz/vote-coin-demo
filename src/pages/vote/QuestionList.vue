@@ -311,6 +311,9 @@ export default {
           for (let index in txs.transactions) {
             const tx = txs.transactions[index];
             if (!tx["sender"]) continue;
+            if (tx["confirmedRound"])
+              tx["confirmed-round"] = tx["confirmedRound"];
+            if (tx["roundTime"]) tx["round-time"] = tx["roundTime"];
             let note = "";
             if (this.isBase64(tx.note)) {
               note = atob(tx.note);
