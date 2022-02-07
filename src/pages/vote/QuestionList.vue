@@ -150,6 +150,9 @@ export default {
         for (let index in this.selection.note.o) {
           this.results[index] = 0;
         }
+        this.$router.push(
+          `/${this.$route.params.env}/${this.$route.params.token}/question/${this.selection.id}`
+        );
       }
     },
     selectedAnswer() {
