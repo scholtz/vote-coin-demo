@@ -19,6 +19,15 @@
       </a>
       <h2>Qr code contents</h2>
       <code>{{ qrcode }}</code>
+      <div v-if="isMobile">
+        <h2>Pay buttons</h2>
+        <div>
+          <a :href="qrcode" class="btn btn-primary btn-lg m-3"
+            >Algorand wallet</a
+          >
+          <a :href="qrcode2" class="btn btn-primary btn-lg m-3">AWallet</a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -53,6 +62,9 @@ export default {
   },
 
   computed: {
+    isMobile() {
+      return /Mobi/i.test(window.navigator.userAgent);
+    },
     qrcode2() {
       return this.qrcode.replace("algorand://", "web+algorand://");
     },
