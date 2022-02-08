@@ -6,8 +6,8 @@
     <Toast />
     <div class="container-fluid d-flex flex-column flex-grow-1">
       <div class="row" v-if="token">
-        <div class="col-3"><LeftMenu /></div>
-        <div class="col-9">
+        <div class="col-3 d-none d-lg-block"><LeftMenu /></div>
+        <div class="col">
           <slot></slot>
         </div>
       </div>
