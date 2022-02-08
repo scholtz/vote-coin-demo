@@ -1,100 +1,84 @@
 <template>
   <div>
-    <div v-if="submit">
-      <QRCode :note="note" :amount="703" :currentToken="currentToken" />
-      <button class="btn btn-light" @click="submit = false">Edit</button>
-    </div>
-    <div v-else-if="submitResult">
-      <QRCode
-        :note="resultNote"
-        :amount="0"
-        :currentToken="currentToken"
-        :sendTo="questioner"
-      />
-      <button class="btn btn-light" @click="submitResult = false">Edit</button>
-    </div>
-
-    <div v-else>
-      <div v-if="loading || error">
-        <div v-if="error" class="alert alert-danger">
-          {{ error }}
-        </div>
-        <div v-else>
-          <span
-            class="spinner-grow spinner-grow-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
-          {{ $t("global.loading") }}
-        </div>
+    <div v-if="loading || error">
+      <div v-if="error" class="alert alert-danger">
+        {{ error }}
       </div>
       <div v-else>
-        <DataTable
-          v-if="!selection"
-          :value="questions"
-          responsiveLayout="scroll"
-          selectionMode="single"
-          v-model:selection="selection"
-          :paginator="true"
-          :rows="20"
-          sortField="round"
-          :sortOrder="-1"
-          removableSort
+        <span
+          class="spinner-grow spinner-grow-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        {{ $t("global.loading") }}
+      </div>
+    </div>
+    <div v-else>
+      <DataTable
+        v-if="!selection"
+        :value="questions"
+        responsiveLayout="scroll"
+        selectionMode="single"
+        v-model:selection="selection"
+        :paginator="true"
+        :rows="20"
+        sortField="round"
+        :sortOrder="-1"
+        removableSort
+      >
+        <template #empty>
+          {{ $t("votequestionlist.no_questions") }}
+        </template>
+        <Column
+          field="note.t"
+          :header="$t('votequestionlist.question_title')"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="round"
+          :header="$t('votequestionlist.round')"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="note.max"
+          :header="$t('votequestionlist.maxround')"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="round-time"
+          :header="$t('votequestionlist.time')"
+          :sortable="true"
         >
-          <template #empty>
-            {{ $t("votequestionlist.no_questions") }}
+          <template #body="slotProps">
+            <div v-if="slotProps.column.props.field in slotProps.data">
+              {{
+                $filters.formatDateTime(
+                  slotProps.data[slotProps.column.props.field]
+                )
+              }}
+            </div>
           </template>
-          <Column
-            field="note.t"
-            :header="$t('votequestionlist.question_title')"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="round"
-            :header="$t('votequestionlist.round')"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="note.max"
-            :header="$t('votequestionlist.maxround')"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="round-time"
-            :header="$t('votequestionlist.time')"
-            :sortable="true"
-          >
-            <template #body="slotProps">
-              <div v-if="slotProps.column.props.field in slotProps.data">
-                {{
-                  $filters.formatDateTime(
-                    slotProps.data[slotProps.column.props.field]
-                  )
-                }}
-              </div>
-            </template>
-          </Column>
-          <Column
-            field="note.category"
-            :header="$t('votequestionlist.category')"
-            :sortable="true"
-          ></Column>
-          <Column
-            field="sender"
-            :header="$t('votequestionlist.sender')"
-            :sortable="true"
-            styleClass="not-show-at-start"
-          ></Column>
-        </DataTable>
-        <div v-if="selection">
-          <button
-            class="btn btn-xs btn-default btn-outline-primary float-end"
-            @click="this.selection = null"
-          >
-            {{ $t("votequestionlist.list") }}
-          </button>
-          <Question :questionId="selection.id" />
-        </div>
+        </Column>
+        <Column
+          field="note.category"
+          :header="$t('votequestionlist.category')"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="sender"
+          :header="$t('votequestionlist.sender')"
+          :sortable="true"
+          styleClass="not-show-at-start"
+        ></Column>
+      </DataTable>
+      <div v-if="selection">
+        <button
+          class="btn btn-xs btn-default btn-outline-primary float-end"
+          @click="this.selection = null"
+        >
+          {{ $t("votequestionlist.list") }}
+        </button>
+        <Question :questionId="selection.id" />
       </div>
     </div>
   </div>
@@ -102,11 +86,9 @@
 
 <script>
 import { mapActions } from "vuex";
-import QRCode from "../../components/QRCode.vue";
 import Question from "./Question";
 export default {
   components: {
-    QRCode,
     Question,
   },
   data() {

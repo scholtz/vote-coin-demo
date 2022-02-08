@@ -29,7 +29,7 @@
             border border-secondary
             text-nowrap
           "
-          title="Evetns"
+          title="Events"
         >
           <i class="pi pi-bell sm-text" />
           {{ space.events }}
