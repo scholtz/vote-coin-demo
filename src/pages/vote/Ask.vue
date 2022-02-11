@@ -59,30 +59,19 @@
           </div>
           <p>{{ $t("voteask.responses_help") }}</p>
           <div class="row" v-for="(option, index) in options" :key="index">
-            <div class="col-2">
-              <input
-                class="form-control my-2"
-                v-model="option.code"
-                :placeholder="$t('voteask.code')"
-              />
-            </div>
-            <div class="col-9">
+            <div class="col">
               <input
                 class="form-control my-2"
                 v-model="option.text"
                 :placeholder="$t('voteask.response_text')"
               />
             </div>
-            <div class="col-1">
+            <div class="col-sm-1 col-md-1">
               <button
                 class="form-control my-2"
-                @click="
-                  this.options = this.options.filter(function (item) {
-                    return item !== option;
-                  })
-                "
+                @click="removeOption($event, option)"
               >
-                {{ $t("voteask.remove_response") }}
+                <i class="pi pi-times"></i>
               </button>
             </div>
           </div>
@@ -173,8 +162,8 @@ export default {
       confirmedRound: null,
       error: "",
       options: [
-        { code: "", text: "" },
-        { code: "", text: "" },
+        { code: 1, text: "" },
+        { code: 2, text: "" },
       ],
       advanced: false,
       submit: false,
@@ -252,7 +241,18 @@ export default {
     }),
     addOption(e) {
       e.preventDefault();
-      this.options.push({ code: "", text: "" });
+      var maxIndex = 0;
+      for (let option in this.options) {
+        maxIndex = Math.max(maxIndex, this.options[option].code);
+      }
+      this.options.push({ code: maxIndex + 1, text: "" });
+    },
+    removeOption(e, option) {
+      e.preventDefault();
+
+      this.options = this.options.filter(function (item) {
+        return item !== option;
+      });
     },
     async submitQuestion(e) {
       e.preventDefault();
