@@ -281,11 +281,18 @@ export default {
             });
           }
         } else {
-          txs = await this.searchForTransactionsWithNoteAndAmount({
-            note: "avote-question/",
-            amount: 702,
-            min: this.params.firstRound - 300000,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceQuestions({
+              assetId: 0,
+            });
+            console.log("txs", txs);
+          } else {
+            txs = await this.searchForTransactionsWithNoteAndAmount({
+              note: "avote-question/",
+              amount: 702,
+              min: this.params.firstRound - 300000,
+            });
+          }
         }
         this.questions = [];
         if (txs && txs.transactions) {
