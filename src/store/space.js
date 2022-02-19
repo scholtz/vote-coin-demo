@@ -30,6 +30,18 @@ const actions = {
     );
     return { transactions: txs };
   },
+  async getSpaceVotes({ dispatch }, { assetId, note }) {
+    const txs = await dispatch(
+      "axios/get",
+      {
+        url: `${this.state.config.api}/Space/${
+          this.state.config.env
+        }/${assetId}/Votes?notePrefix=${encodeURI(note)}`,
+      },
+      { root: true }
+    );
+    return { transactions: txs };
+  },
 };
 export default {
   namespaced: true,

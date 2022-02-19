@@ -81,6 +81,7 @@ export default {
       processing: false,
       confirmedRound: null,
       error: "",
+      useApiData: true,
     };
   },
   watch: {
@@ -115,6 +116,7 @@ export default {
         "indexer/searchForTransactionsWithNoteAndAmount",
       searchForTokenTransactionsWithNoteAndAmount:
         "indexer/searchForTokenTransactionsWithNoteAndAmount",
+      getSpaceVotes: "space/getSpaceVotes",
       openSuccess: "toast/openSuccess",
       makePayment: "algod/makePayment",
       getTransactionParams: "algod/getTransactionParams",
@@ -127,17 +129,31 @@ export default {
       const search = "avote-vote/v1/" + this.question.substring(0, 10);
       let txs = null;
       if (this.isASAVote) {
-        txs = await this.searchForTokenTransactionsWithNoteAndAmount({
-          note: search,
-          amount: 703,
-          assetId: this.currentToken,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceVotes({
+            note: search,
+            assetId: this.currentToken,
+          });
+        } else {
+          txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+            note: search,
+            amount: 703,
+            assetId: this.currentToken,
+          });
+        }
       } else {
-        txs = await this.searchForTransactionsWithNoteAndAmount({
-          note: search,
-          amount: 703,
-          min: this.params.firstRound - 300000,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceVotes({
+            note: search,
+            assetId: 0,
+          });
+        } else {
+          txs = await this.searchForTransactionsWithNoteAndAmount({
+            note: search,
+            amount: 703,
+            min: this.params.firstRound - 300000,
+          });
+        }
       }
       this.loading = false;
       let latest = null;
@@ -164,6 +180,9 @@ export default {
             continue;
           }
           console.log("noteJson", noteJson);
+          if (!tx["confirmed-round"])
+            tx["confirmed-round"] = tx["confirmedRound"];
+          if (!tx["round-time"]) tx["round-time"] = tx["roundTime"];
           const answ = {
             round: tx["confirmed-round"],
             "round-time": tx["round-time"],
