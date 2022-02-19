@@ -39,7 +39,7 @@
               <th>{{ $t("votequestionlist.round") }}:</th>
               <td>{{ this.selection.round }}</td>
             </tr>
-            <tr v-if="debug && this.selection && this.selection.note">
+            <tr v-if="this.selection && this.selection.note">
               <th>{{ $t("votequestionlist.maxround") }}:</th>
               <td>{{ this.max }}</td>
             </tr>
