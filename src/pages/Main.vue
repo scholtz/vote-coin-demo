@@ -1,6 +1,20 @@
 <template>
   <PublicLayout>
-    <div class="container-fluid">
+    <div v-if="loading || error" class="container-fluid">
+      <div v-if="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+      <div v-else>
+        <span
+          class="spinner-grow spinner-grow-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        {{ $t("global.loading") }}
+      </div>
+    </div>
+
+    <div v-else class="container-fluid">
       <div class="row">
         <div class="col-9">
           <div class="input-group mb-3">
@@ -68,7 +82,7 @@ export default {
     return {
       visibleSpaces: [],
       spaces: [],
-      loading: false,
+      loading: true,
       searchText: "",
     };
   },

@@ -93,7 +93,7 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      loading: true,
       selection: null,
       questions: [],
       answers: [],
