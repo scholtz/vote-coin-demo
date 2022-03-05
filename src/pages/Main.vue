@@ -45,9 +45,9 @@
       <div
         class="
           row
-          row-cols-xxl-12
-          row-cols-xl-12
-          row-cols-lg-6
+          row-cols-xxl-6
+          row-cols-xl-4
+          row-cols-lg-4
           row-cols-md-2
           row-cols-sm-1
           row-cols-1

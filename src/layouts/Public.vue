@@ -7,7 +7,7 @@
     <div class="container-fluid d-flex flex-column flex-grow-1">
       <div class="row" v-if="token">
         <div class="col-3 d-none d-lg-block"><LeftMenu /></div>
-        <div class="col">
+        <div class="col col-lg-9">
           <slot></slot>
         </div>
       </div>

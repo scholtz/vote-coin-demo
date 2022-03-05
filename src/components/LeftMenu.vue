@@ -26,6 +26,7 @@
         <td>Decimals</td>
         <td>{{ space.decimals }}</td>
       </tr>
+      <!--
       <tr>
         <td>Verification</td>
         <td>
@@ -39,6 +40,7 @@
           ><span v-else>Not Verified</span>
         </td>
       </tr>
+      -->
     </table>
     <div class="text-center">
       <img :src="space.iconPath" class="w-75" />
