@@ -167,6 +167,12 @@
                   class="btn btn-primary bg-primary"
                   @click="checkResults"
                 >
+                  <span
+                    v-if="processingResults"
+                    class="spinner-grow spinner-grow-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
                   {{ $t("votequestionlist.check_results") }}
                 </button>
                 <div
