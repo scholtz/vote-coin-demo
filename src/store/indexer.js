@@ -241,7 +241,10 @@ const actions = {
       console.log("error", error);
     }
   },
-  async getAccountBalanceAtRound({ commit }, { account, round, assetId }) {
+  async getAccountBalanceAtRound(
+    { commit, dispatch },
+    { account, round, assetId }
+  ) {
     try {
       console.log(
         "this.state.indexer.balance is undefined",
@@ -271,7 +274,7 @@ const actions = {
 
       let balance = 0;
       if (!assetId || assetId <= 0) {
-        balance = accountInfo.account.amount / 1000000;
+        balance = accountInfo.account.amount;
       } else {
         const item = accountInfo.account.assets.find(
           (a) =>
@@ -290,6 +293,163 @@ const actions = {
       }
     } catch (error) {
       console.log("error", error);
+      const params = await dispatch(
+        "algod/getTransactionParams",
+        {},
+        {
+          root: true,
+        }
+      );
+      console.log("params", params);
+      return dispatch("getAccountBalanceAtRoundHardWay", {
+        params,
+        account,
+        round,
+        assetId,
+      });
+    }
+  },
+  /// Get latest account balance, fetch all transactions with specified asset and count the balance at the start
+  async getAccountBalanceAtRoundHardWay(
+    { commit },
+    { params, account, round, assetId }
+  ) {
+    try {
+      console.log(
+        "getAccountBalanceAtRoundHardWay",
+        round,
+        this.state.indexer.balance,
+        this.state.indexer.balance[round] !== undefined
+      );
+      if (this.state.indexer.balance[round] !== undefined) {
+        if (this.state.indexer.balance[round][account] !== undefined) {
+          if (
+            this.state.indexer.balance[round][account][assetId] !== undefined
+          ) {
+            return this.state.indexer.balance[round][account][assetId];
+          }
+        }
+      }
+      const url = new URL(this.state.config.indexer);
+      const indexerClient = new algosdk.Indexer(
+        this.state.config.indexerToken,
+        this.state.config.indexer,
+        url.port
+      );
+      const currentRound = params.firstRound;
+      const accountInfo = await indexerClient
+        .lookupAccountByID(account)
+        .round(currentRound)
+        .do();
+
+      let balance = 0;
+      if (!assetId || assetId <= 0) {
+        balance = accountInfo.account.amount;
+
+        const iterLimit = 1000;
+        let numtx = 1;
+        let nexttoken = "";
+        while (numtx > 0) {
+          const assetTxs = await indexerClient
+            .lookupAccountTransactions(account)
+            .minRound(round)
+            .limit(iterLimit)
+            .maxRound(currentRound)
+            .nextToken(nexttoken)
+            .do();
+          nexttoken = assetTxs["next-token"];
+          numtx = assetTxs.transactions.length;
+
+          if (assetTxs.transactions) {
+            console.log(
+              `processing ${assetTxs.transactions.length} tx rollback`,
+              assetTxs
+            );
+            assetTxs.transactions.forEach((tx) => {
+              if (tx.sender == account) {
+                if (tx.fee) {
+                  balance += tx.fee;
+                }
+              }
+              const assetTx = tx["payment-transaction"];
+              console.log(`processing`, tx, assetTx);
+
+              if (assetTx) {
+                if (assetTx.receiver !== tx.sender) {
+                  // skip self txs
+                  console.log("tx.amount", assetTx, assetTx.amount);
+                  if (assetTx.amount) {
+                    if (assetTx.receiver === account) {
+                      balance -= assetTx.amount; // we are rolling backward in time, so this account as a sender had higher balance before this tx
+                    } else {
+                      balance += assetTx.amount;
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+      } else {
+        const item = accountInfo.account.assets.find(
+          (a) =>
+            a["asset-id"] == assetId &&
+            a["deleted"] == false &&
+            a["is-frozen"] == false
+        );
+        if (item) {
+          balance = item.amount;
+        }
+        const iterLimit = 1000;
+        let numtx = 1;
+        let nexttoken = "";
+        while (numtx > 0) {
+          const assetTxs = await indexerClient
+            .lookupAccountTransactions(account)
+            .minRound(round)
+            .assetID(assetId)
+            .limit(iterLimit)
+            .maxRound(currentRound)
+            .nextToken(nexttoken)
+            .do();
+          nexttoken = assetTxs["next-token"];
+          numtx = assetTxs.transactions.length;
+
+          if (assetTxs.transactions) {
+            console.log(
+              `processing ${assetTxs.transactions.length} tx rollback`,
+              assetTxs
+            );
+            assetTxs.transactions.forEach((tx) => {
+              const assetTx = tx["asset-transfer-transaction"];
+              console.log(`processing`, tx, assetTx);
+
+              if (assetTx) {
+                if (assetTx.receiver !== tx.sender) {
+                  // skip self txs
+                  console.log("tx.amount", assetTx, assetTx.amount);
+                  if (assetTx.amount) {
+                    if (assetTx.receiver === account) {
+                      balance -= assetTx.amount; // we are rolling backward in time, so this account as a sender had higher balance before this tx
+                    } else {
+                      balance += assetTx.amount;
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
+      console.log(
+        `0x2156156 Account ${account} balance at round ${round} for asset ${assetId} was ${balance}`
+      );
+      if (balance > 0) {
+        await commit("setBalance", { account, round, assetId, balance });
+        return balance;
+      }
+    } catch (error) {
+      console.log("getAccountBalanceAtRoundHardWay", error);
     }
   },
   async getAssetsByName({ commit }, { name }) {
