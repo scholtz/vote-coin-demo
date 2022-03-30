@@ -681,7 +681,6 @@ export default {
         "indexer/searchForTokenTransactionsWithNoteAndAmount",
       searchForTokenTransactionsWithNoteAndAmountAndAccount:
         "indexer/searchForTokenTransactionsWithNoteAndAmountAndAccount",
-      loadAllAccountsBalancesAtRound: "indexer/loadAllAccountsBalancesAtRound",
       openSuccess: "toast/openSuccess",
       makePayment: "algod/makePayment",
       getTransactionParams: "algod/getTransactionParams",
@@ -762,12 +761,6 @@ export default {
         const search = "avote-vote/v1/" + this.selection.id.substring(0, 10);
         let txs = false;
         if (this.isASAVote) {
-          // load all balances at round
-          const loaded = await this.loadAllAccountsBalancesAtRound({
-            assetId: this.currentToken,
-            round: this.max,
-          });
-          console.log("loaded amount", loaded);
           // txs
 
           txs = await this.searchForTokenTransactionsWithNoteAndAmount({
