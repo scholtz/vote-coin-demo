@@ -89,9 +89,49 @@
               id="category"
               class="form-control my-2"
               v-model="category"
-              rows="8"
               :placeholder="$t('voteask.category_placeholder')"
             />
+          </div>
+          <div class="col-12">
+            <div class="p-field-checkbox">
+              <Checkbox
+                id="encryptedVotingEnabled"
+                name="encryptedVotingEnabled"
+                :binary="true"
+                v-model="encryptedVotingEnabled"
+              />
+              &nbsp;
+              <label for="encryptedVotingEnabled">
+                {{ $t("voteask.encryptedVotingEnabled") }}</label
+              >
+            </div>
+            <div v-if="encryptedVotingEnabled">
+              <input
+                id="encryptionAddress"
+                class="form-control my-2"
+                v-model="encryptionAddress"
+                :placeholder="$t('voteask.encryptionAddress')"
+              />
+              <p v-if="encryptionMnemonic">
+                Copy mnemonics to secure location. You will need it to decrypt
+                encrypted votes.
+              </p>
+              <input
+                v-if="encryptionMnemonic"
+                id="encryptionMnemonic"
+                class="form-control my-2"
+                v-model="encryptionMnemonic"
+                :disabled="true"
+                :placeholder="$t('voteask.encryptionMnemonic')"
+              />
+              <button
+                class="btn"
+                :class="encryptionAddress ? 'btn-light' : 'btn-primary'"
+                @click="generateNewAddress"
+              >
+                {{ $t("voteask.generateNewAddress") }}
+              </button>
+            </div>
           </div>
           <div>
             <code>{{ note }}</code>
@@ -140,6 +180,7 @@
 import MainLayout from "../../layouts/Public.vue";
 import VoteMenu from "../../components/VoteMenu.vue";
 import QRCode from "../../components/QRCode.vue";
+import algosdk from "algosdk";
 
 import { mapActions } from "vuex";
 export default {
@@ -152,6 +193,9 @@ export default {
     return {
       title: "",
       question: "",
+      encryptedVotingEnabled: false,
+      encryptionAddress: "",
+      encryptionMnemonic: "",
       url: "",
       category: "community",
       duration: 20000,
@@ -175,7 +219,7 @@ export default {
       if (!this.question) return "";
       if (!this.category) return "";
       if (!this.duration) return "";
-
+      if (this.encryptedVotingEnabled && !this.encryptionAddress) return "";
       let options = {};
       for (let index in this.options) {
         const option = this.options[index];
@@ -189,13 +233,17 @@ export default {
       const json = {};
       json.t = this.title;
       json.q = this.question;
+      if (this.encryptedVotingEnabled) {
+        json.e = this.encryptionAddress;
+      }
       json.duration = this.duration;
       json.category = this.category;
       if (this.url) {
         json.url = this.url;
       }
       json.o = options;
-      return "avote-question/v2:j" + JSON.stringify(json);
+      const msg = JSON.stringify(json);
+      return "avote-question/v2:j" + msg;
     },
     max_block() {
       if (!this.params) return;
@@ -230,6 +278,7 @@ export default {
       await this.setEnv({ env: this.$route.params.env });
     }
   },
+
   methods: {
     ...mapActions({
       openSuccess: "toast/openSuccess",
@@ -239,6 +288,12 @@ export default {
       setToken: "vote/setToken",
       setEnv: "config/setEnv",
     }),
+    generateNewAddress(e) {
+      e.preventDefault();
+      const newAccount = algosdk.generateAccount();
+      this.encryptionAddress = newAccount.addr;
+      this.encryptionMnemonic = algosdk.secretKeyToMnemonic(newAccount.sk);
+    },
     addOption(e) {
       e.preventDefault();
       var maxIndex = 0;
@@ -264,4 +319,4 @@ export default {
     },
   },
 };
-</script>
+</script> 

@@ -146,6 +146,42 @@
                   }}
                 </div>
 
+                <div
+                  class="alert"
+                  :class="encryptVoteCast ? 'alert-success' : 'alert-danger'"
+                  v-if="!votingFinished && this.selection.note.e"
+                >
+                  <div class="p-field-checkbox">
+                    <Checkbox
+                      id="encryptVoteCast"
+                      name="encryptVoteCast"
+                      :binary="true"
+                      v-model="encryptVoteCast"
+                    />
+                    &nbsp;
+                    <label for="encryptVoteCast">
+                      {{ $t("votequestionlist.encryptVoteCast") }}</label
+                    >
+                  </div>
+                </div>
+                <div
+                  v-if="
+                    !votingFinished && this.selection.note.e && encryptVoteCast
+                  "
+                  class="my-2"
+                >
+                  <div v-if="false">
+                    <label for="mnemonicsTest"
+                      >Test decode using mnemonics</label
+                    >
+                    <input
+                      id="mnemonicsTest"
+                      class="form-control"
+                      v-model="mnemonics"
+                    />
+                  </div>
+                </div>
+
                 <button
                   v-if="!votingFinished"
                   class="btn btn-primary bg-primary"
@@ -162,9 +198,27 @@
                     })
                   }}
                 </button>
+                <div
+                  v-if="
+                    votingFinished &&
+                    selection &&
+                    selection.note &&
+                    selection.note.e
+                  "
+                  class="my-3"
+                >
+                  {{ $t("votequestionlist.mnemonics_required_to_get_results") }}
+                  <Password
+                    class="w-100 pr-2"
+                    v-model="mnemonics"
+                    :feedback="false"
+                    toggleMask
+                    inputClass="w-100 pr-2"
+                  />
+                </div>
                 <button
                   v-if="votingFinished"
-                  class="btn btn-primary bg-primary"
+                  class="btn btn-primary bg-primary my-3"
                   @click="checkResults"
                 >
                   <span
@@ -412,19 +466,50 @@
                     </div>
                   </div>
                   <div>
-                    <code>{{ resultNote }}</code>
-                  </div>
-                  <div>
+                    <div class="p-field-checkbox">
+                      <Checkbox
+                        id="publishMnemonics"
+                        name="publishMnemonics"
+                        :binary="true"
+                        v-model="publishMnemonics"
+                      />
+                      &nbsp;
+                      <label for="publishMnemonics">
+                        {{ $t("voteask.publishMnemonics") }}</label
+                      >
+                    </div>
                     <button
                       class="btn btn-primary my-3"
                       @click="submitResult = true"
                     >
-                      Submit my results for audit purposes
+                      {{ $t("votequestionlist.submit_results") }}
                     </button>
+                    <div v-if="resultNote">
+                      <textarea
+                        v-model="resultNote"
+                        rows="5"
+                        disabled
+                        class="form-control"
+                      />
+                    </div>
                   </div>
                 </div>
-                <div v-if="canVote">
-                  <code>{{ note }}</code>
+                <div v-if="!votingFinished">
+                  <textarea
+                    v-model="note"
+                    class="form-control my-2"
+                    rows="4"
+                    :disabled="true"
+                  >
+                  </textarea>
+                  <textarea
+                    v-if="mnemonics"
+                    v-model="noteDecoded"
+                    class="form-control my-2"
+                    rows="4"
+                    :disabled="true"
+                  >
+                  </textarea>
                 </div>
               </td>
             </tr>
@@ -473,12 +558,17 @@ import { mapActions } from "vuex";
 import AnswersList from "./AnswersList";
 import QRCode from "../../components/QRCode.vue";
 import { Countdown } from "vue3-flip-countdown";
+import nacl from "tweetnacl";
+import ed2curve from "ed2curve";
+import algosdk from "algosdk";
+import Password from "primevue/password";
 
 export default {
   components: {
     AnswersList,
     QRCode,
     Countdown,
+    Password,
   },
   data() {
     return {
@@ -513,6 +603,10 @@ export default {
       submit: false,
       submitResult: false,
       asset: {},
+
+      encryptVoteCast: true,
+      publishMnemonics: false,
+      mnemonics: "",
     };
   },
   watch: {
@@ -528,7 +622,12 @@ export default {
       }
     },
     selectedAnswer() {
-      if (this.selectedAnswer && this.selectedAnswer.response) {
+      if (
+        this.selectedAnswer &&
+        this.selectedAnswer.response &&
+        this.selectedAnswer.response != "Encrypted"
+      ) {
+        console.log("this.selectedAnswer", this.selectedAnswer);
         this.results = JSON.parse(JSON.stringify(this.selectedAnswer.response));
       }
     },
@@ -623,12 +722,58 @@ export default {
       const json = {};
       json.q = this.selection.id;
       json.a = this.results;
-      return (
-        "avote-vote/v1/" +
-        this.selection.id.substr(0, 10) +
-        ":j" +
-        JSON.stringify(json)
-      );
+
+      if (this.selection.note.e && this.encryptVoteCast) {
+        // https://github.com/urtho/algosms-sdk/blob/main/src/crypto.ts
+        const encMsg = JSON.stringify(json);
+
+        // Add a random length pad of up to 16 bytes if one is missing
+
+        // Let's use signing keys for encryption. AUDIT required here
+        const recipientPublicSignKey = algosdk.decodeAddress(
+          this.selection.note.e
+        ).publicKey;
+        // Convert recipient's public signing key to crypto key
+        const rcptPubKey = ed2curve.convertPublicKey(recipientPublicSignKey);
+
+        // Let's use random KP and send the public part over the wire
+        const otKeyPair = nacl.box.keyPair();
+        // Let's agree on static nonce as we have ephemeral keys anyway
+        const nonce = nacl.randomBytes(nacl.box.nonceLength);
+
+        const cipherText = nacl.box(
+          Buffer.from(encMsg),
+          nonce,
+          rcptPubKey,
+          otKeyPair.secretKey
+        );
+
+        const notePayload = {
+          nonce: Buffer.from(nonce).toString("base64"),
+          otPK: Buffer.from(otKeyPair.publicKey).toString("base64"),
+          cT: Buffer.from(cipherText).toString("base64"),
+        };
+
+        return (
+          "avote-vote-enc/v1/" +
+          this.selection.id.substr(0, 10) +
+          ":j" +
+          JSON.stringify(notePayload)
+        );
+      } else {
+        return (
+          "avote-vote/v1/" +
+          this.selection.id.substr(0, 10) +
+          ":j" +
+          JSON.stringify(json)
+        );
+      }
+    },
+    noteDecoded() {
+      console.log("this.note", this.note);
+      if (!this.note) return "";
+      if (!this.decodeNote) return "";
+      return this.decodeNote(this.note);
     },
     resultNote() {
       if (!this.selection) return "";
@@ -636,6 +781,9 @@ export default {
 
       const json = {};
       json.q = this.selection.id;
+      if (this.publishMnemonics) {
+        json.e = this.mnemonics;
+      }
       json.r = {};
       console.log("this.totalResults.sbr", this.totalResults);
       if (this.totalResults) {
@@ -727,6 +875,7 @@ export default {
 
         this.params = await this.getTransactionParams();
         await this.loadSelection();
+
         this.loading = false;
       } catch (e) {
         console.log("e", e);
@@ -776,7 +925,7 @@ export default {
           });
         }
 
-        if (txs.transactions) {
+        if (txs && txs.transactions) {
           for (let index in txs.transactions) {
             const tx = txs.transactions[index];
             if (!tx["sender"]) continue;
@@ -826,6 +975,78 @@ export default {
           console.log("no transactions found");
           return;
         }
+
+        // get all answers ENCODED
+        if (this.mnemonics) {
+          const searchEnc =
+            "avote-vote-enc/v1/" + this.selection.id.substring(0, 10);
+          txs = null;
+          if (this.isASAVote) {
+            // txs
+
+            txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+              note: searchEnc,
+              amount: 703,
+              assetId: this.currentToken,
+            });
+          } else {
+            txs = await this.searchForTransactionsWithNoteAndAmount({
+              note: searchEnc,
+              amount: 703,
+              min: this.params.firstRound - 300000,
+            });
+          }
+
+          if (txs && txs.transactions) {
+            for (let index in txs.transactions) {
+              const tx = txs.transactions[index];
+              if (!tx["sender"]) continue;
+              let note = "";
+              if (this.isBase64(tx.note)) {
+                note = atob(tx.note);
+              }
+              console.log("dec note", note);
+              const noteDec = this.decodeNote(note);
+
+              let noteJson = {};
+              try {
+                noteJson = JSON.parse(noteDec);
+              } catch (e) {
+                console.log("error parsing", tx);
+                continue;
+              }
+              console.log("noteJson", noteJson);
+
+              if (tx["confirmed-round"] > this.max) continue; // do not count any late votes
+
+              const answ = {
+                round: tx["confirmed-round"],
+                "round-time": tx["round-time"],
+                sender: tx["sender"],
+                id: tx["id"],
+                response: noteJson.a,
+              };
+
+              if (answersPerAccount[answ.sender] === undefined) {
+                answersPerAccount[answ.sender] = answ;
+              } else {
+                if (answersPerAccount[answ.sender].round < answ.round)
+                  answersPerAccount[answ.sender] = answ;
+                if (
+                  answersPerAccount[answ.sender].round == answ.round &&
+                  answersPerAccount[answ.sender].id > answ.id
+                ) {
+                  answersPerAccount[answ.sender] = answ;
+                }
+              }
+            }
+          } else {
+            this.processingResults = false;
+            console.log("no transactions found");
+            return;
+          }
+        }
+
         console.log("answersPerAccount", answersPerAccount);
         // calculate whole delegation tree
         const delegationPerAccount = {};
@@ -1545,6 +1766,33 @@ export default {
         console.log("no transactions found");
       }
       return ret;
+    },
+    decodeNote(note) {
+      try {
+        let noteStr = `${note}`;
+        if (!noteStr) return "";
+        if (!noteStr.startsWith("avote-vote-enc/v1/")) return "";
+        noteStr = noteStr.substring(30);
+
+        const recipientAlgoAccount = algosdk.mnemonicToSecretKey(
+          this.mnemonics
+        );
+        const rcptSecretKey = ed2curve.convertSecretKey(
+          recipientAlgoAccount.sk
+        );
+        const notePayload = JSON.parse(noteStr);
+        // Unseal the box
+        const decryptedBuffer = nacl.box.open(
+          Buffer.from(notePayload.cT, "base64"),
+          Buffer.from(notePayload.nonce, "base64"),
+          Buffer.from(notePayload.otPK, "base64"),
+          rcptSecretKey
+        );
+        return Buffer.from(decryptedBuffer).toString("utf8");
+      } catch (e) {
+        console.error(`Error parsing note ${note}: ${e}`);
+        return "";
+      }
     },
   },
 };

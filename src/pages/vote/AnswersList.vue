@@ -155,6 +155,7 @@ export default {
           });
         }
       }
+
       this.loading = false;
       let latest = null;
       if (txs && txs.transactions) {
@@ -196,6 +197,76 @@ export default {
         this.error = "Error while loading data from the blockchain";
         console.log("no transactions found");
       }
+
+      const searchEnc = "avote-vote-enc/v1/" + this.question.substring(0, 10);
+      if (this.isASAVote) {
+        if (this.useApiData) {
+          txs = await this.getSpaceVotes({
+            note: searchEnc,
+            assetId: this.currentToken,
+          });
+        } else {
+          txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+            note: searchEnc,
+            amount: 703,
+            assetId: this.currentToken,
+          });
+        }
+      } else {
+        if (this.useApiData) {
+          txs = await this.getSpaceVotes({
+            note: searchEnc,
+            assetId: 0,
+          });
+        } else {
+          txs = await this.searchForTransactionsWithNoteAndAmount({
+            note: searchEnc,
+            amount: 703,
+            min: this.params.firstRound - 300000,
+          });
+        }
+      }
+
+      if (txs && txs.transactions) {
+        for (let index in txs.transactions) {
+          const tx = txs.transactions[index];
+          if (!tx["sender"]) continue;
+          let note = "";
+          if (this.isBase64(tx.note)) {
+            note = atob(tx.note);
+          }
+          console.log("note", note);
+          const searchWithJ = searchEnc + ":j";
+          if (!note.startsWith(searchWithJ)) {
+            continue;
+          }
+          note = note.replace(searchWithJ, "");
+          console.log("note", note);
+          let noteJson = {};
+          try {
+            noteJson = JSON.parse(note);
+          } catch (e) {
+            console.log("error parsing", tx);
+            continue;
+          }
+          console.log("noteJson", noteJson);
+          if (!tx["confirmed-round"])
+            tx["confirmed-round"] = tx["confirmedRound"];
+          if (!tx["round-time"]) tx["round-time"] = tx["roundTime"];
+          const answ = {
+            round: tx["confirmed-round"],
+            "round-time": tx["round-time"],
+            sender: tx["sender"],
+            id: tx["id"],
+            response: "Encrypted",
+          };
+          this.questions.push(answ);
+        }
+      } else {
+        this.error = "Error while loading data from the blockchain";
+        console.log("no transactions found");
+      }
+
       if (latest) {
         latest.latest = true;
         this.$emit("update:selectedAnswer", latest);

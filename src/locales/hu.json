@@ -81,7 +81,10 @@
     "add_response":"Új válasz felvétele", 
     "category":"Kérdés kategória",
     "category_placeholder":"Tudás alapú kategória alapján a szavazati jog átruházása van érvényben",
-    "submit_question":"Tegyél föl egy kérdést az {accountName} számla segítségével"    
+    "submit_question":"Tegyél föl egy kérdést az {accountName} számla segítségével",
+    "encryptedVotingEnabled": "Allow members to use encrypted voting",
+    "encryptionAddress": "Encryption address - Generate new mnemonics for each voting and store it securly",
+    "generateNewAddress": "Generate new encryption mnemonics"
   },
   "votedelegate":{
     "title":"Szavazati jog átruházása",
@@ -140,7 +143,10 @@
     "stlr":"Simple trusted list results",
     "stlr_sum":"Number of accounted accounts",
     "qtlr":"Quadratic trusted list results",
-    "qtlr_sum":"Number of accounted accounts"
+    "qtlr_sum":"Number of accounted accounts",
+    "encryptVoteCast":"Encrypt my voting decision",
+    "submit_results":"Submit my results for audit purposes",
+    "mnemonics_required_to_get_results":"Encrypted voting requires mnemonics to properly calculate the results"
   },
   "votetl":{
     "title":"A megbízható szavazók listájának kezelése",    
