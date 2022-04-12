@@ -19,12 +19,20 @@
     <input class="form-control" v-model="account" v-if="!sendTo" />
 
     <button
-      v-if="!account || !connector"
+      v-if="!account || (!connector && !myAlgoWalletConnected)"
       class="btn my-2"
       :class="account ? 'btn-light' : 'btn-primary'"
       @click="WalletConnectInit"
     >
       Load account from Pera
+    </button>
+    <button
+      v-if="!account || (!connector && !myAlgoWalletConnected)"
+      class="btn m-2"
+      :class="account ? 'btn-light' : 'btn-primary'"
+      @click="initMyAlgoConnect"
+    >
+      Load account from MyAlgo
     </button>
 
     <div v-if="account">
@@ -36,17 +44,31 @@
         Pay with Wallet Connect (Pera)
       </button>
 
+      <button
+        v-if="myAlgoWalletConnected"
+        class="btn btn-primary my-2"
+        @click="signAndSendMyAlgo"
+      >
+        Pay with MyAlgo Connect
+      </button>
+
       <a
         :href="qrcode2"
         class="btn"
-        :class="connector ? 'm-2 btn-light' : 'my-2 btn-primary'"
+        :class="
+          connector || myAlgoWalletConnected
+            ? 'm-2 btn-light'
+            : 'my-2 btn-primary'
+        "
         >Pay using web+algorand:// protocol (AWallet)</a
       >
 
       <a
         :href="qrcode"
         class="btn m-2"
-        :class="connector ? 'btn-light' : 'btn-primary'"
+        :class="
+          connector || myAlgoWalletConnected ? 'btn-light' : 'btn-primary'
+        "
         >Pay using algorand:// protocol</a
       >
       <button
@@ -69,7 +91,7 @@
   </div>
 </template>
 
-<script>
+<script >
 import QRCodeVue3 from "qrcode-vue3";
 
 import { mapActions } from "vuex";
@@ -77,6 +99,8 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import algosdk from "algosdk";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
+import MyAlgoConnect from "@randlabs/myalgo-connect";
+const myAlgoWallet = new MyAlgoConnect();
 
 export default {
   components: {
@@ -93,6 +117,7 @@ export default {
       error: "",
       suggestedParams: null,
       result: null,
+      myAlgoWalletConnected: false,
     };
   },
 
@@ -113,7 +138,7 @@ export default {
 
   computed: {
     isMobile() {
-      const vendor = navigator.userAgent || navigator.vendor || window.opera;
+      const vendor = navigator.userAgent || navigator.vendor;
 
       return !!(
         /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
@@ -216,6 +241,18 @@ export default {
         }
       });
     },
+    async initMyAlgoConnect() {
+      try {
+        const accounts = await myAlgoWallet.connect();
+        console.log("accounts", accounts);
+        const addresses = accounts.map((account) => account.address);
+        const account = addresses[0];
+        this.account = account;
+        this.myAlgoWalletConnected = true;
+      } catch (e) {
+        this.error = e.message;
+      }
+    },
     async getTxToSign() {
       const note = Buffer.from("DiatomiX Web", "ascii");
       console.log("note", note);
@@ -244,9 +281,24 @@ export default {
         return algosdk.makePaymentTxnWithSuggestedParamsFromObject(tosign);
       }
     },
+    async signAndSendMyAlgo() {
+      try {
+        //myAlgoWallet.connect();
+        const txn = await this.getTxToSign();
+        const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());
+        this.result = await this.sendRawTransaction({
+          signedTxn: signedTxn.blob,
+        });
+        console.log("result", this.result);
+        this.sending = false;
+        this.sent = true;
+      } catch (e) {
+        this.error = e.message;
+      }
+    },
     async signAndSendPera() {
       try {
-        const txn = await this.getTxToSign(this.account);
+        const txn = await this.getTxToSign();
         console.log("txn", txn);
         const txns = [txn];
         const txnsToSign = txns.map((txn) => {

@@ -11,6 +11,7 @@
   "dependencies": {
     "@json-rpc-tools/utils": "^1.7.6",
     "@popperjs/core": "^2.11.2",
+    "@randlabs/myalgo-connect": "^1.1.2",
     "@revolist/vue3-datagrid": "^3.0.97",
     "@walletconnect/client": "^1.7.7",
     "algorand-walletconnect-qrcode-modal": "^1.7.4",
