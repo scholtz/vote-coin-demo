@@ -9,10 +9,13 @@
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
   },
   "dependencies": {
+    "@json-rpc-tools/utils": "^1.7.6",
     "@popperjs/core": "^2.11.2",
     "@reach-sh/stdlib": "^0.1.7",
     "@revolist/vue3-datagrid": "^3.0.97",
-    "algosdk": "^1.13.1",
+    "@walletconnect/client": "^1.7.7",
+    "algorand-walletconnect-qrcode-modal": "^1.7.4",
+    "algosdk": "^1.15.0",
     "axios": "^0.21.4",
     "base64url": "^3.0.1",
     "bootstrap": "^5.1.3",

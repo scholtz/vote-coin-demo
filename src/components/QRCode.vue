@@ -7,33 +7,76 @@
       To be able to generate QR code, please specify your address. You will do
       the self transaction with specified note field.
     </p>
+    <div v-if="signing" class="alert alert-info">
+      Check your wallet, and sign the transaction
+    </div>
+    <div v-if="sending" class="alert alert-info">Sending to the network</div>
+    <div v-if="sent" class="alert alert-success">
+      Sent to the network <span v-if="result">{{ result.txn }}</span>
+    </div>
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+
     <input class="form-control" v-model="account" v-if="!sendTo" />
+
+    <button
+      v-if="!account || !connector"
+      class="btn my-2"
+      :class="account ? 'btn-light' : 'btn-primary'"
+      @click="WalletConnectInit"
+    >
+      Load account from Pera
+    </button>
+
     <div v-if="account">
-      <a :href="qrcode2">
-        <QRCodeVue3
-          :width="600"
-          :height="600"
-          :value="qrcode"
-          :qrOptions="{ errorCorrectionLevel: 'H' }"
-        />
-      </a>
+      <button
+        v-if="connector"
+        class="btn btn-primary my-2"
+        @click="signAndSendPera"
+      >
+        Pay with Wallet Connect (Pera)
+      </button>
+
+      <a
+        :href="qrcode2"
+        class="btn"
+        :class="connector ? 'm-2 btn-light' : 'my-2 btn-primary'"
+        >Pay using web+algorand:// protocol (AWallet)</a
+      >
+
+      <a
+        :href="qrcode"
+        class="btn m-2"
+        :class="connector ? 'btn-light' : 'btn-primary'"
+        >Pay using algorand:// protocol</a
+      >
+      <button
+        v-if="connector"
+        class="btn btn-light m-2"
+        @click="disconnectPera"
+      >
+        Disconnect Wallet Connect
+      </button>
+
+      <QRCodeVue3
+        :width="600"
+        :height="600"
+        :value="qrcode"
+        :qrOptions="{ errorCorrectionLevel: 'H' }"
+      />
       <h2>Qr code contents</h2>
       <code>{{ qrcode }}</code>
-      <div v-if="isMobile">
-        <h2>Pay buttons</h2>
-        <div>
-          <a :href="qrcode" class="btn btn-primary btn-lg m-3"
-            >Algorand wallet</a
-          >
-          <a :href="qrcode2" class="btn btn-primary btn-lg m-3">AWallet</a>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import QRCodeVue3 from "qrcode-vue3";
+
+import { mapActions } from "vuex";
+import WalletConnect from "@walletconnect/client";
+import QRCodeModal from "algorand-walletconnect-qrcode-modal";
+import algosdk from "algosdk";
+import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 
 export default {
   components: {
@@ -43,6 +86,13 @@ export default {
   data() {
     return {
       account: "",
+      connector: null,
+      signing: false,
+      sending: false,
+      sent: false,
+      error: "",
+      suggestedParams: null,
+      result: null,
     };
   },
 
@@ -94,12 +144,151 @@ export default {
 
   watch: {
     account() {
-      localStorage.setItem("account", this.account);
+      if (this.account && this.account != null && this.account != "null") {
+        localStorage.setItem("account", this.account);
+      }
     },
   },
 
   async mounted() {
     this.account = localStorage.getItem("account");
+    if (!this.account || this.account == "null") {
+      this.account = "";
+    }
+    this.suggestedParams = await this.getTransactionParams();
+  },
+  methods: {
+    ...mapActions({
+      getTransactionParams: "algod/getTransactionParams",
+      sendRawTransaction: "algod/sendRawTransaction",
+    }),
+    disconnectPera() {
+      this.connector.killSession();
+      this.connector = null;
+    },
+    async WalletConnectInit() {
+      console.log("WalletConnectInit");
+      // Create a connector
+      this.connector = new WalletConnect({
+        bridge: "https://bridge.walletconnect.org", // Required
+        qrcodeModal: QRCodeModal,
+      });
+      console.log("connector", this.connector);
+      // Check if connection is already established
+      if (!this.connector.connected) {
+        // create new session
+        this.connector.createSession();
+      }
+      if (this.connector.connected) {
+        if (this.connector.accounts.length > 0) {
+          const account = this.connector.accounts[0];
+          console.log("signing:", account);
+          this.account = account;
+        }
+      }
+      // Subscribe to connection events
+      this.connector.on("connect", async (error, payload) => {
+        if (error) {
+          throw error;
+        }
+        console.log("connect.payload", error, payload);
+        // Get provided accounts
+        const { accounts } = payload.params[0];
+        const account = accounts[0];
+        this.account = account;
+      });
+
+      this.connector.on("session_update", (error, payload) => {
+        if (error) {
+          throw error;
+        }
+        console.log("session_update.payload", error, payload);
+
+        // Get updated accounts
+        const { accounts } = payload.params[0];
+        console.log("accounts", accounts);
+      });
+
+      this.connector.on("disconnect", (error, payload) => {
+        console.log("disconnect.error,payload", error, payload);
+        if (error) {
+          throw error;
+        }
+      });
+    },
+    async getTxToSign() {
+      const note = Buffer.from("DiatomiX Web", "ascii");
+      console.log("note", note);
+      if (this.currentToken > 0) {
+        const tosign = {
+          from: this.account,
+          to: this.account,
+          amount: this.amount,
+          note: new Uint8Array(Buffer.from(this.note, "utf8").buffer),
+          assetIndex: parseInt(this.currentToken),
+          suggestedParams: this.suggestedParams,
+        };
+        console.log("tosign", tosign);
+        return algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(
+          tosign
+        );
+      } else {
+        const tosign = {
+          from: this.account,
+          to: this.account,
+          amount: this.amount,
+          note: new Uint8Array(Buffer.from(this.note, "utf8").buffer),
+          suggestedParams: this.suggestedParams,
+        };
+        console.log("tosign", tosign);
+        return algosdk.makePaymentTxnWithSuggestedParamsFromObject(tosign);
+      }
+    },
+    async signAndSendPera() {
+      try {
+        const txn = await this.getTxToSign(this.account);
+        console.log("txn", txn);
+        const txns = [txn];
+        const txnsToSign = txns.map((txn) => {
+          const encodedTxn = Buffer.from(
+            algosdk.encodeUnsignedTransaction(txn)
+          ).toString("base64");
+
+          return {
+            txn: encodedTxn,
+            message: "DiatomiX Web",
+          };
+        });
+
+        const requestParams = [txnsToSign];
+
+        const request = formatJsonRpcRequest("algo_signTxn", requestParams);
+        console.log("request", request);
+        this.signing = true;
+        const result = await this.connector.sendCustomRequest(request);
+        this.signing = false;
+        this.sending = true;
+        const decodedResult = result.map((element) => {
+          return element
+            ? new Uint8Array(Buffer.from(element, "base64"))
+            : null;
+        });
+        if (decodedResult.length > 0) {
+          //const decoded = algosdk.decodeSignedTransaction(decodedResult[0]);
+          this.result = await this.sendRawTransaction({
+            signedTxn: decodedResult[0],
+          });
+          console.log("result", this.result);
+          this.sending = false;
+          this.sent = true;
+        }
+      } catch (e) {
+        this.sending = false;
+        this.sent = false;
+        this.signing = false;
+        this.error = e.message;
+      }
+    },
   },
 };
 </script>
