@@ -78,7 +78,7 @@
       "response_text":"Text of the response option",
       "remove_response":"Remove option"   ,
       "responses_help":"People will answer your question by voting for specific responses. Please provide codes and texts of 2-N responses.",
-      "add_response":"Add new ressponse", 
+      "add_response":"Add new response", 
       "category":"Question category",
       "category_placeholder":"Knowledge based category vote delegation in effect",
       "submit_question":"Ask question through blockchain",
