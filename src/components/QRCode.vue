@@ -17,15 +17,15 @@
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
     <input class="form-control" v-model="account" v-if="!sendTo" />
-
+    <!--
     <button
       v-if="!account || (!connector && !myAlgoWalletConnected)"
-      class="btn my-2"
+      class="btn my-2 "
       :class="account ? 'btn-light' : 'btn-primary'"
       @click="WalletConnectInit"
     >
-      Load account from Pera
-    </button>
+      Load account with Wallet Connect 2
+    </button>-->
     <button
       v-if="!account || (!connector && !myAlgoWalletConnected)"
       class="btn m-2"
@@ -78,24 +78,34 @@
       >
         Disconnect Wallet Connect
       </button>
-
-      <QRCodeVue3
-        :width="600"
-        :height="600"
-        :value="qrcode"
-        :qrOptions="{ errorCorrectionLevel: 'H' }"
-      />
-      <h2>Qr code contents</h2>
-      <code>{{ qrcode }}</code>
+      <div v-if="uri">
+        <h2>Please scan QR code with Wallet Connect 2 compatible wallet</h2>
+        <QRCodeVue3
+          :width="600"
+          :height="600"
+          :value="uri"
+          :qrOptions="{ errorCorrectionLevel: 'H' }"
+        />
+      </div>
+      <div v-else>
+        <QRCodeVue3
+          :width="600"
+          :height="600"
+          :value="qrcode"
+          :qrOptions="{ errorCorrectionLevel: 'H' }"
+        />
+        <h2>Qr code contents</h2>
+        <code>{{ qrcode }}</code>
+      </div>
     </div>
   </div>
 </template>
 
-<script >
+<script>
 import QRCodeVue3 from "qrcode-vue3";
 
 import { mapActions } from "vuex";
-import WalletConnect from "@walletconnect/client";
+import UniversalProvider from "universal-provider-with-algorand";
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import algosdk from "algosdk";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
@@ -118,6 +128,7 @@ export default {
       suggestedParams: null,
       result: null,
       myAlgoWalletConnected: false,
+      uri: "",
     };
   },
 
@@ -194,10 +205,22 @@ export default {
     async WalletConnectInit() {
       console.log("WalletConnectInit");
       // Create a connector
-      this.connector = new WalletConnect({
-        bridge: "https://bridge.walletconnect.org", // Required
-        qrcodeModal: QRCodeModal,
+      this.connector = await UniversalProvider.init({
+        logger: "info",
+        projectId: "0bcb1b091b3d9dced34e10a580b32c9e",
+        metadata: {
+          name: "Vote Coin App",
+          description: "Vote Coin App for onchain community management",
+          url: "https://app.vote-coin.com/",
+          icons: ["https://app.vote-coin.com/logo200.png"],
+        },
       });
+
+      this.connector.on("display_uri", (uri) => {
+        console.log("display_uri", uri);
+        this.uri = uri;
+      });
+
       console.log("connector", this.connector);
       // Check if connection is already established
       if (!this.connector.connected) {

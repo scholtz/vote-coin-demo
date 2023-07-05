@@ -214,11 +214,17 @@ const actions = {
       if (data) {
         await commit("setConfig", data);
         return data;
+      } else {
+        await commit("setConfig", {});
+        dispatch("snackbar/openError", "Unable to fetch configuration", {
+          root: true,
+        });
       }
     } catch (error) {
-      dispatch("snackbar/openError", error.response, {
+      dispatch("snackbar/openError", "Unable to fetch configuration", {
         root: true,
       });
+      await commit("setConfig", {});
     }
   },
 };

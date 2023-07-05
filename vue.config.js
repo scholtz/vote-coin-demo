@@ -23,7 +23,12 @@ module.exports = {
   },
   configureWebpack: {
     resolve: {
-      symlinks: false, // 使用npm link
+      symlinks: false,
+      fallback: {
+        crypto: require.resolve("crypto-browserify"),
+        stream: require.resolve("stream-browserify"),
+        buffer: require.resolve("buffer"),
+      },
     },
     devServer: {
       headers: { "Access-Control-Allow-Origin": "*" },

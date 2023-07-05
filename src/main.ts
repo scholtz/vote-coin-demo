@@ -73,7 +73,7 @@ myApp.component("Dropdown", Dropdown);
 
 myApp.config.globalProperties.$filters = {
   formatCurrency(
-    value,
+    value = 0,
     currency = "ALG",
     minimumFractionDigits = 6,
     multiply = true,
@@ -102,8 +102,8 @@ myApp.config.globalProperties.$filters = {
     }*/
   },
   formatDateTime(
-    value,
-    separator,
+    value = 0,
+    separator = " ",
     showSeconds = true,
     locale = "cs",
     alwaysShowDate = false
@@ -126,7 +126,7 @@ myApp.config.globalProperties.$filters = {
       valueMoment.format(showSeconds ? "LTS" : "LT")
     );
   },
-  formatPercent(value) {
+  formatPercent(value = 0) {
     if (!value) return "0 %";
     return Math.round(value * 1000) / 10 + " %";
   },
