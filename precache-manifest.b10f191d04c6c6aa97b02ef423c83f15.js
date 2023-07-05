@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/apple-touch-icon.png"
   },
   {
-    "revision": "e9c19a96bc3cb8777f38",
+    "revision": "66c0a5ea6a2f30ec85f1",
     "url": "/css/app.c12e439e.css"
   },
   {
@@ -2208,12 +2208,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/tether-usdt-logo-96.png"
   },
   {
-    "revision": "f06b6f50590bfdde90b69179d71e0149",
+    "revision": "98b9c3143f7a457600e9ea2b71584d76",
     "url": "/index.html"
   },
   {
-    "revision": "e9c19a96bc3cb8777f38",
-    "url": "/js/app.21e2b698.js"
+    "revision": "66c0a5ea6a2f30ec85f1",
+    "url": "/js/app.8f442916.js"
   },
   {
     "revision": "c4a301ce76743134fb1e",
