@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.509998afb5c01cf2b147427a5f1c2c0b.js"
+  "/precache-manifest.d8de707db3d9c676f9f250b915f1f0ac.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "vote-coin-demo"});
