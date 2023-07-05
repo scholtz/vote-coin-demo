@@ -168,7 +168,7 @@ const actions = {
         env: "testnet",
         algod: "https://testnet-api.algonode.cloud",
         kmd: "?",
-        indexer: "https://algoindexer.testnet.algoexplorerapi.io",
+        indexer: "https://testnet-idx.algonode.cloud",
       });
     }
     if (env == "devnet") {

@@ -153,7 +153,7 @@ export default {
           env: "testnet",
           algod: "https://testnet-api.algonode.cloud",
           kmd: "?",
-          indexer: "	https://testnet-idx.algonode.cloud",
+          indexer: "https://testnet-idx.algonode.cloud",
         });
       }
       if (this.env == "devnet") {
