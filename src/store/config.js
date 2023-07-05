@@ -153,7 +153,7 @@ const actions = {
     if (env == "mainnet") {
       dispatch("setHosts", {
         env: "mainnet",
-        algod: "https://node.algoexplorerapi.io",
+        algod: "https://mainnet-api.algonode.cloud",
         kmd: "?",
         indexer: "https://mainnet-idx.algonode.cloud",
       });
