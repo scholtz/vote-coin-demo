@@ -3,9 +3,9 @@ const state = () => ({
   debug: false,
   LOGO: "/logo200.png",
   env: "mainnet",
-  algod: "https://node.algoexplorerapi.io",
+  algod: "https://mainnet-api.algonode.cloud",
   kmd: "",
-  indexer: "https://algoindexer.algoexplorerapi.io",
+  indexer: "https://mainnet-idx.algonode.cloud",
   algodToken:
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   kmdToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -155,13 +155,13 @@ const actions = {
         env: "mainnet",
         algod: "https://node.algoexplorerapi.io",
         kmd: "?",
-        indexer: "https://algoindexer.algoexplorerapi.io",
+        indexer: "https://mainnet-idx.algonode.cloud",
       });
     }
     if (env == "testnet") {
       dispatch("setHosts", {
         env: "testnet",
-        algod: "https://node.testnet.algoexplorerapi.io",
+        algod: "https://testnet-api.algonode.cloud",
         kmd: "?",
         indexer: "https://algoindexer.testnet.algoexplorerapi.io",
       });
