@@ -61,7 +61,9 @@ const mutations = {
 
     const algodHost = localStorage.getItem("algodHost");
     if (algodHost) {
-      state.algod = algodHost;
+      if (algodHost != "https://node.algoexplorerapi.io") {
+        state.algod = algodHost;
+      }
     }
     const env = localStorage.getItem("env");
     if (env) {
@@ -77,6 +79,9 @@ const mutations = {
     }
     const indexerHost = localStorage.getItem("indexerHost");
     if (indexerHost) {
+      if (indexerHost != "https://algoindexer.algoexplorerapi.io") {
+        state.algod = indexerHost;
+      }
       state.indexer = indexerHost;
     }
 
