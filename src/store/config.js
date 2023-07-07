@@ -61,7 +61,10 @@ const mutations = {
 
     const algodHost = localStorage.getItem("algodHost");
     if (algodHost) {
-      if (algodHost != "https://node.algoexplorerapi.io") {
+      if (algodHost == "https://node.algoexplorerapi.io") {
+        console.warn("Fixing algodHost");
+        localStorage.setItem("algodHost", state.algod);
+      } else {
         state.algod = algodHost;
       }
     }
@@ -79,10 +82,12 @@ const mutations = {
     }
     const indexerHost = localStorage.getItem("indexerHost");
     if (indexerHost) {
-      if (indexerHost != "https://algoindexer.algoexplorerapi.io") {
-        state.algod = indexerHost;
+      if (indexerHost == "https://algoindexer.algoexplorerapi.io") {
+        console.warn("Fixing indexerHost");
+        localStorage.setItem("indexerHost", state.indexer);
+      } else {
+        state.indexer = indexerHost;
       }
-      state.indexer = indexerHost;
     }
 
     const algodToken = localStorage.getItem("algodToken");
