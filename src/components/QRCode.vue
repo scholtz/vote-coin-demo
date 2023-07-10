@@ -106,7 +106,6 @@ import QRCodeVue3 from "qrcode-vue3";
 
 import { mapActions } from "vuex";
 import UniversalProvider from "universal-provider-with-algorand";
-import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import algosdk from "algosdk";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
