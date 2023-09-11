@@ -42,6 +42,26 @@ const actions = {
     );
     return { transactions: txs };
   },
+  async getSpaceDelegations({ dispatch }, { assetId }) {
+    const txs = await dispatch(
+      "axios/get",
+      {
+        url: `${this.state.config.api}/Space/${this.state.config.env}/${assetId}/Delegations`,
+      },
+      { root: true }
+    );
+    return { transactions: txs };
+  },
+  async getSpaceTrustedListTxs({ dispatch }, { assetId }) {
+    const txs = await dispatch(
+      "axios/get",
+      {
+        url: `${this.state.config.api}/Space/${this.state.config.env}/${assetId}/TrustedListTxs`,
+      },
+      { root: true }
+    );
+    return { transactions: txs };
+  },
 };
 export default {
   namespaced: true,

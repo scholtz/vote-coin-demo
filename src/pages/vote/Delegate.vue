@@ -181,6 +181,7 @@ export default {
       submit: false,
       account: "",
       newAcc: "",
+      useApiData: true,
     };
   },
   computed: {
@@ -238,24 +239,38 @@ export default {
         "indexer/searchForTokenTransactionsWithNoteAndAmountAndAccount",
       setToken: "vote/setToken",
       setEnv: "config/setEnv",
+      getSpaceDelegations: "space/getSpaceDelegations",
     }),
     async loadMyDelegation() {
       const search = "avote-delegation/v1";
       this.loading = true;
       let txs = null;
       if (this.isASAVote) {
-        txs = await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
-          note: search,
-          amount: 701,
-          account: "",
-          assetId: this.currentToken,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceDelegations({
+            assetId: this.currentToken,
+          });
+        } else {
+          txs =
+            await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
+              note: search,
+              amount: 701,
+              account: "",
+              assetId: this.currentToken,
+            });
+        }
       } else {
-        txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
-          note: search,
-          amount: 701,
-          account: "",
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceDelegations({
+            assetId: 0,
+          });
+        } else {
+          txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
+            note: search,
+            amount: 701,
+            account: "",
+          });
+        }
       }
       this.loading = false;
       let latest = null;

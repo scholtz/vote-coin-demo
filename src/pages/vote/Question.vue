@@ -607,6 +607,7 @@ export default {
       encryptVoteCast: true,
       publishMnemonics: false,
       mnemonics: "",
+      useApiData: true,
     };
   },
   watch: {
@@ -836,6 +837,9 @@ export default {
       axiosGet: "axios/get",
       getAccountBalanceAtRound: "indexer/getAccountBalanceAtRound",
       getAsset: "indexer/getAsset",
+      getSpaceVotes: "space/getSpaceVotes",
+      getSpaceDelegations: "space/getSpaceDelegations",
+      getSpaceTrustedListTxs: "space/getSpaceTrustedListTxs",
     }),
     async loadSelection() {
       const res = await this.getTransaction({ txid: this.questionId });
@@ -911,18 +915,31 @@ export default {
         let txs = false;
         if (this.isASAVote) {
           // txs
-
-          txs = await this.searchForTokenTransactionsWithNoteAndAmount({
-            note: search,
-            amount: 703,
-            assetId: this.currentToken,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceVotes({
+              note: search,
+              assetId: this.currentToken,
+            });
+          } else {
+            txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+              note: search,
+              amount: 703,
+              assetId: this.currentToken,
+            });
+          }
         } else {
-          txs = await this.searchForTransactionsWithNoteAndAmount({
-            note: search,
-            amount: 703,
-            min: this.params.firstRound - 300000,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceVotes({
+              note: search,
+              assetId: 0,
+            });
+          } else {
+            txs = await this.searchForTransactionsWithNoteAndAmount({
+              note: search,
+              amount: 703,
+              min: this.params.firstRound - 300000,
+            });
+          }
         }
 
         if (txs && txs.transactions) {
@@ -984,17 +1001,31 @@ export default {
           if (this.isASAVote) {
             // txs
 
-            txs = await this.searchForTokenTransactionsWithNoteAndAmount({
-              note: searchEnc,
-              amount: 703,
-              assetId: this.currentToken,
-            });
+            if (this.useApiData) {
+              txs = await this.getSpaceVotes({
+                note: searchEnc,
+                assetId: this.currentToken,
+              });
+            } else {
+              txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+                note: searchEnc,
+                amount: 703,
+                assetId: this.currentToken,
+              });
+            }
           } else {
-            txs = await this.searchForTransactionsWithNoteAndAmount({
-              note: searchEnc,
-              amount: 703,
-              min: this.params.firstRound - 300000,
-            });
+            if (this.useApiData) {
+              txs = await this.getSpaceVotes({
+                note: searchEnc,
+                assetId: 0,
+              });
+            } else {
+              txs = await this.searchForTransactionsWithNoteAndAmount({
+                note: searchEnc,
+                amount: 703,
+                min: this.params.firstRound - 300000,
+              });
+            }
           }
 
           if (txs && txs.transactions) {
@@ -1053,16 +1084,28 @@ export default {
         const searchDeleg = "avote-delegation/v1";
 
         if (this.isASAVote) {
-          txs = await this.searchForTokenTransactionsWithNoteAndAmount({
-            note: searchDeleg,
-            amount: 701,
-            assetId: this.currentToken,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceDelegations({
+              assetId: this.currentToken,
+            });
+          } else {
+            txs = await this.searchForTokenTransactionsWithNoteAndAmount({
+              note: searchDeleg,
+              amount: 701,
+              assetId: this.currentToken,
+            });
+          }
         } else {
-          txs = await this.searchForTransactionsWithNoteAndAmount({
-            note: searchDeleg,
-            amount: 701,
-          });
+          if (this.useApiData) {
+            txs = await this.getSpaceDelegations({
+              assetId: 0,
+            });
+          } else {
+            txs = await this.searchForTransactionsWithNoteAndAmount({
+              note: searchDeleg,
+              amount: 701,
+            });
+          }
         }
 
         if (txs && txs.transactions) {
@@ -1712,18 +1755,31 @@ export default {
       const searchTL = "avote-tl/v1";
       let txs = null;
       if (this.isASAVote) {
-        txs = await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
-          note: searchTL,
-          amount: 705,
-          account: this.selection.sender,
-          assetId: this.currentToken,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceTrustedListTxs({
+            assetId: this.currentToken,
+          });
+        } else {
+          txs =
+            await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
+              note: searchTL,
+              amount: 705,
+              account: this.selection.sender,
+              assetId: this.currentToken,
+            });
+        }
       } else {
-        txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
-          note: searchTL,
-          amount: 705,
-          account: this.selection.sender,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceTrustedListTxs({
+            assetId: 0,
+          });
+        } else {
+          txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
+            note: searchTL,
+            amount: 705,
+            account: this.selection.sender,
+          });
+        }
       }
 
       if (txs && txs.transactions) {

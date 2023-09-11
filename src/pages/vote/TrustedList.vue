@@ -152,6 +152,7 @@ export default {
       error: "",
       submit: false,
       account: "",
+      useApiData: true,
     };
   },
   watch: {
@@ -210,6 +211,7 @@ export default {
       waitForConfirmation: "algod/waitForConfirmation",
       setToken: "vote/setToken",
       setEnv: "config/setEnv",
+      getSpaceTrustedListTxs: "space/getSpaceTrustedListTxs",
     }),
     validateAccount(acc) {
       if (!acc) return false;
@@ -224,18 +226,31 @@ export default {
       const search = "avote-tl/v1";
       let txs = null;
       if (this.isASAVote) {
-        txs = await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
-          note: search,
-          amount: 705,
-          account: "",
-          assetId: this.currentToken,
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceTrustedListTxs({
+            assetId: this.currentToken,
+          });
+        } else {
+          txs =
+            await this.searchForTokenTransactionsWithNoteAndAmountAndAccount({
+              note: search,
+              amount: 705,
+              account: "",
+              assetId: this.currentToken,
+            });
+        }
       } else {
-        txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
-          note: search,
-          amount: 705,
-          account: "",
-        });
+        if (this.useApiData) {
+          txs = await this.getSpaceTrustedListTxs({
+            assetId: 0,
+          });
+        } else {
+          txs = await this.searchForTransactionsWithNoteAndAmountAndAccount({
+            note: search,
+            amount: 705,
+            account: "",
+          });
+        }
       }
       this.loading = false;
       let ret = {};
