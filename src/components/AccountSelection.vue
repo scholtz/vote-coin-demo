@@ -14,11 +14,6 @@ const { wallets, activeWallet, activeAccount } = useWallet();
         </button>
       </div>
     </ul>
-
-    <div v-if="activeAccount?.address">
-      <h2>Active Account</h2>
-      <p>{{ activeAccount?.address }}</p>
-    </div>
   </div>
   <div v-if="activeWallet">
     <h2>Active Wallet</h2>
@@ -26,5 +21,9 @@ const { wallets, activeWallet, activeAccount } = useWallet();
     <button class="btn btn-primary my-2" @click="activeWallet.disconnect()">
       Disconnect
     </button>
+  </div>
+  <div v-if="activeAccount?.address">
+    <h2>Active Account</h2>
+    <p>{{ activeAccount?.address }}</p>
   </div>
 </template>
