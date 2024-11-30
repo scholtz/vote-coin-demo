@@ -12,7 +12,7 @@
         <td>ASA Id</td>
         <td>
           <a
-            :href="`https://algoexplorer.io/asset/${space.asa}`"
+            :href="`https://explorer.perawallet.app/asset/${space.asa}`"
             target="_blank"
             >{{ space.asa }}</a
           >

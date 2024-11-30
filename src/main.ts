@@ -1,3 +1,9 @@
+import {
+  NetworkId,
+  WalletId,
+  WalletManagerPlugin,
+} from "@txnlab/use-wallet-vue";
+
 import { createApp } from "vue"; //h, markRaw
 import App from "./App.vue";
 import PrimeVue from "primevue/config";
@@ -131,5 +137,44 @@ myApp.config.globalProperties.$filters = {
     return Math.round(value * 1000) / 10 + " %";
   },
 };
+
+// Install the plugin
+myApp.use(WalletManagerPlugin, {
+  wallets: [
+    {
+      id: WalletId.BIATEC,
+      options: {
+        projectId: "54958e07dbb79eedf5cd5564bf16d817",
+        metadata: {
+          name: "Vote Coin App",
+          description: "The DAO management tool",
+          url: "https://app.vote-coin.com",
+          icons: ["https://beta.k8s.aramid.finance/logo200.png"],
+        },
+      },
+    },
+    WalletId.DEFLY,
+    WalletId.PERA,
+    WalletId.EXODUS,
+    {
+      id: WalletId.LUTE,
+      options: { siteName: "Vote Coin" },
+    },
+    WalletId.KIBISIS,
+    {
+      id: WalletId.WALLETCONNECT,
+      options: {
+        projectId: "54958e07dbb79eedf5cd5564bf16d817",
+        metadata: {
+          name: "Vote Coin App",
+          description: "The DAO management tool",
+          url: "https://app.vote-coin.com",
+          icons: ["https://beta.k8s.aramid.finance/logo200.png"],
+        },
+      },
+    },
+  ],
+  network: NetworkId.MAINNET,
+});
 
 myApp.mount("#app");

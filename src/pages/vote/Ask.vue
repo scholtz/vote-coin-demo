@@ -254,7 +254,7 @@ export default {
     max_blockTime() {
       if (!this.paramsTime) return;
       var t = new Date(this.paramsTime);
-      t.setSeconds(t.getSeconds() + this.duration * 4.5);
+      t.setSeconds(t.getSeconds() + this.duration * 2.9);
       return t;
     },
     isASAVote() {
@@ -319,4 +319,4 @@ export default {
     },
   },
 };
-</script> 
+</script>

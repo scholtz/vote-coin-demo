@@ -61,7 +61,7 @@ const mutations = {
 
     const algodHost = localStorage.getItem("algodHost");
     if (algodHost) {
-      if (algodHost == "https://node.algoexplorerapi.io") {
+      if (algodHost == "https://mainnet-api.4160.nodely.dev") {
         console.warn("Fixing algodHost");
         localStorage.setItem("algodHost", state.algod);
       } else {
@@ -82,7 +82,7 @@ const mutations = {
     }
     const indexerHost = localStorage.getItem("indexerHost");
     if (indexerHost) {
-      if (indexerHost == "https://algoindexer.algoexplorerapi.io") {
+      if (indexerHost == "https://mainnet-idx.4160.nodely.dev") {
         console.warn("Fixing indexerHost");
         localStorage.setItem("indexerHost", state.indexer);
       } else {

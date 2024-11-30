@@ -26,14 +26,8 @@
     >
       Load account with Wallet Connect 2
     </button>-->
-    <button
-      v-if="!account || (!connector && !myAlgoWalletConnected)"
-      class="btn m-2"
-      :class="account ? 'btn-light' : 'btn-primary'"
-      @click="initMyAlgoConnect"
-    >
-      Load account from MyAlgo
-    </button>
+
+    <AccountSelection></AccountSelection>
 
     <div v-if="account">
       <button
@@ -41,7 +35,7 @@
         class="btn btn-primary my-2"
         @click="signAndSendPera"
       >
-        Pay with Wallet Connect (Pera)
+        Sign with Wallet Connect (Pera)
       </button>
 
       <button
@@ -49,9 +43,10 @@
         class="btn btn-primary my-2"
         @click="signAndSendMyAlgo"
       >
-        Pay with MyAlgo Connect
+        Sign with MyAlgo Connect
       </button>
 
+      <AccountSign v-if="txn" :txn="txn"></AccountSign>
       <a
         :href="qrcode2"
         class="btn"
@@ -60,7 +55,7 @@
             ? 'm-2 btn-light'
             : 'my-2 btn-primary'
         "
-        >Pay using web+algorand:// protocol (AWallet)</a
+        >Sign using web+algorand:// protocol (AWallet)</a
       >
 
       <a
@@ -69,7 +64,7 @@
         :class="
           connector || myAlgoWalletConnected ? 'btn-light' : 'btn-primary'
         "
-        >Pay using algorand:// protocol</a
+        >Sign using algorand:// protocol</a
       >
       <button
         v-if="connector"
@@ -110,13 +105,20 @@ import algosdk from "algosdk";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 const myAlgoWallet = new MyAlgoConnect();
+import AccountSelection from "./AccountSelection.vue";
+import AccountSign from "./AccountSign.vue";
+import { useWallet } from "@txnlab/use-wallet-vue";
 
 export default {
   components: {
     QRCodeVue3,
+    AccountSelection,
+    AccountSign,
   },
 
   data() {
+    const { wallets, activeWallet, activeAccount } = useWallet();
+
     return {
       account: "",
       connector: null,
@@ -128,6 +130,10 @@ export default {
       result: null,
       myAlgoWalletConnected: false,
       uri: "",
+      wallets,
+      activeWallet,
+      activeAccount,
+      txn: null,
     };
   },
 
@@ -178,10 +184,26 @@ export default {
   },
 
   watch: {
-    account() {
-      if (this.account && this.account != null && this.account != "null") {
+    async account() {
+      if (this.activeAccount?.address) {
+        localStorage.setItem("account", this.account);
+      } else if (
+        this.account &&
+        this.account != null &&
+        this.account != "null"
+      ) {
         localStorage.setItem("account", this.account);
       }
+      await this.getTxToSign();
+    },
+    async note() {
+      await this.getTxToSign();
+    },
+    async amount() {
+      await this.getTxToSign();
+    },
+    async suggestedParams() {
+      await this.getTxToSign();
     },
   },
 
@@ -190,7 +212,12 @@ export default {
     if (!this.account || this.account == "null") {
       this.account = "";
     }
+    if (this.activeAccount?.address) {
+      this.account = this.activeAccount?.address;
+    }
     this.suggestedParams = await this.getTransactionParams();
+    await this.getTxToSign();
+    console.log("this.txn", this.txn);
   },
   methods: {
     ...mapActions({
@@ -278,6 +305,7 @@ export default {
     async getTxToSign() {
       const note = Buffer.from("DiatomiX Web", "ascii");
       console.log("note", note);
+      if (!this.suggestedParams) return;
       if (this.currentToken > 0) {
         const tosign = {
           from: this.account,
@@ -288,9 +316,10 @@ export default {
           suggestedParams: this.suggestedParams,
         };
         console.log("tosign", tosign);
-        return algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(
-          tosign
-        );
+        const txn =
+          algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(tosign);
+        this.txn = txn;
+        return txn;
       } else {
         const tosign = {
           from: this.account,
@@ -300,7 +329,9 @@ export default {
           suggestedParams: this.suggestedParams,
         };
         console.log("tosign", tosign);
-        return algosdk.makePaymentTxnWithSuggestedParamsFromObject(tosign);
+        const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject(tosign);
+        this.txn = txn;
+        return txn;
       }
     },
     async signAndSendMyAlgo() {
