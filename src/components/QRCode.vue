@@ -181,7 +181,7 @@ export default {
       if (network.indexOf("-") < 0) {
         network = network + "-v1.0";
       }
-      ret += "&network=" + this.$store.state.config.env;
+      ret += "&network=" + network;
       ret += "&xnote=" + this.note;
       return ret;
     },
