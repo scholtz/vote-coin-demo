@@ -244,6 +244,7 @@ export default {
     async loadMyDelegation() {
       const search = "avote-delegation/v1";
       this.loading = true;
+      this.delegations = { any: {} };
       let txs = null;
       if (this.isASAVote) {
         if (this.useApiData) {
@@ -272,12 +273,12 @@ export default {
           });
         }
       }
-
       this.loading = false;
       let latest = null;
       if (txs && txs.transactions) {
         for (let index in txs.transactions) {
           const tx = txs.transactions[index];
+          if (tx["sender"] != this.account) continue;
           let note = "";
           if (this.isBase64(tx.note)) {
             note = atob(tx.note);
