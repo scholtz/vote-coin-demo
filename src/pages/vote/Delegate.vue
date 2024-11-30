@@ -272,12 +272,12 @@ export default {
           });
         }
       }
+
       this.loading = false;
       let latest = null;
       if (txs && txs.transactions) {
         for (let index in txs.transactions) {
           const tx = txs.transactions[index];
-          if (tx["sender"] != "x") continue;
           let note = "";
           if (this.isBase64(tx.note)) {
             note = atob(tx.note);
