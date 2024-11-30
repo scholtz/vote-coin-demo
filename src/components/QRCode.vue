@@ -177,6 +177,10 @@ export default {
       if (this.currentToken && parseInt(this.currentToken) > 0) {
         ret += "&asset=" + this.currentToken;
       }
+      let network = this.$store.state.config.env;
+      if (network.indexOf("-") < 0) {
+        network = network + "-v1.0";
+      }
       ret += "&network=" + this.$store.state.config.env;
       ret += "&xnote=" + this.note;
       return ret;
